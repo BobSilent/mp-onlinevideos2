@@ -35,7 +35,7 @@ namespace OnlineVideos.Sites
             {
                 vidUrl = doc.SelectSingleNode(@"//Clip/WebHLSMediaFiles/WebHLSMediaFile").InnerText;
                 data = GetWebData(vidUrl);
-                video.PlaybackOptions = HlsPlaylistParser.GetPlaybackOptions(data, vidUrl, (x, y) => y.Bandwidth.CompareTo(x.Bandwidth), (x) => x.Width + "x" + x.Height);
+                video.PlaybackOptions = HlsPlaylistParser.GetPlaybackOptions(data, vidUrl, HlsStreamInfoFormatter.VideoDimension);
                 return video.GetPreferredUrl(true);
             }
             else
