@@ -113,7 +113,7 @@ namespace OnlineVideos
                 return (T)(object)htmlDoc;
             }
 
-            return JsonConvert.DeserializeObject<T>(webData);
+            return default(T);
         }
 
         public string GetWebData(string url, string postData = null, CookieContainer cookies = null, string referer = null, IWebProxy proxy = null, bool forceUTF8 = false, bool allowUnsafeHeader = false, string userAgent = null, Encoding encoding = null, NameValueCollection headers = null, bool cache = true)
