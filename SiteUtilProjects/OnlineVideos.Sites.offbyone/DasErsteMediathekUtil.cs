@@ -393,7 +393,7 @@ namespace OnlineVideos.Sites
                         Thumb = new Uri(myBaseUri, imgUrl).AbsoluteUri,
                         Description = subtitle,
                         // Livestream has 30min (1800sec) timeshift, therefore forward at least 29:55min
-                        StartTime = TimeSpan.FromSeconds(1795).ToString(), 
+                        StartTime = TimeSpan.FromSeconds(1795).ToString(),
                         Length = startTime == unixTimeMinValue ? string.Empty :  $"{(endTime - startTime).TotalMinutes:F0} min"
                     });
                 }
