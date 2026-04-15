@@ -1,69 +1,42 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Runtime.Caching;
 using System.Text;
-using System.Threading;
 
 namespace OnlineVideos
 {
     public class WebCache
     {
-        class WebCacheEntry
-        {
-            public DateTime LastUpdated { get; set; }
-            public string Data { get; set; }
-        }
-
         #region Singleton
-        WebCache()
-        {
-            // only use cache if a timeout > 0 was set
-            if (OnlineVideoSettings.Instance.CacheTimeout > 0)
-            {
-                _cleanUpTimer = new Timer(CleanCache, null, TimeSpan.FromMinutes(10), TimeSpan.FromMinutes(10));
-            }
-        }
+        WebCache() { }
         private static readonly Lazy<WebCache> _instance = new Lazy<WebCache>(() => new WebCache());
         public static WebCache Instance => _instance.Value;
         #endregion
 
-        private readonly Timer _cleanUpTimer;
-        readonly ConcurrentDictionary<string, WebCacheEntry> _cache = new ConcurrentDictionary<string, WebCacheEntry>(StringComparer.Ordinal);
+        // Named cache instance — keeps OnlineVideos entries isolated from MemoryCache.Default.
+        private readonly MemoryCache _cache = new MemoryCache("OnlineVideos");
 
         public string this[string url]
         {
             get
             {
                 if (OnlineVideoSettings.Instance.CacheTimeout > 0) // only use cache if a timeout > 0 was set
-                {
-                    WebCacheEntry result;
-                    if (_cache.TryGetValue(url, out result))
-                    {
-                        return result.Data;
-                    }
-                }
+                    return _cache.Get(url) as string;
                 return null;
             }
             set
             {
                 if (OnlineVideoSettings.Instance.CacheTimeout > 0) // only use cache if a timeout > 0 was set
                 {
-                    _cache[url] = new WebCacheEntry { Data = value, LastUpdated = DateTime.Now };
-                }
-            }
-        }
-
-        void CleanCache(object state)
-        {
-            var cutoff = DateTime.Now.AddMinutes(-OnlineVideoSettings.Instance.CacheTimeout);
-            foreach (var key in _cache.Keys)
-            {
-                if (_cache.TryGetValue(key, out WebCacheEntry entry) && entry.LastUpdated <= cutoff)
-                {
-                    _cache.TryRemove(key, out _);
+                    var policy = new CacheItemPolicy
+                    {
+                        AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(OnlineVideoSettings.Instance.CacheTimeout)
+                    };
+                    _cache.Set(url, value, policy);
                 }
             }
         }

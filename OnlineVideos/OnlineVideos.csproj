@@ -96,6 +96,7 @@
       <Aliases>OVSubs</Aliases>
     </Reference>
     <Reference Include="System.configuration" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
