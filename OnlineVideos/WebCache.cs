@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
@@ -26,12 +26,12 @@ namespace OnlineVideos
                 _cleanUpTimer = new Timer(CleanCache, null, TimeSpan.FromMinutes(10), TimeSpan.FromMinutes(10));
             }
         }
-        static WebCache _instance;
-        public static WebCache Instance { get { if (_instance == null) _instance = new WebCache(); return _instance; } }
+        private static readonly Lazy<WebCache> _instance = new Lazy<WebCache>(() => new WebCache());
+        public static WebCache Instance => _instance.Value;
         #endregion
 
-        Timer _cleanUpTimer;
-        readonly Dictionary<string, WebCacheEntry> _cache = new Dictionary<string, WebCacheEntry>();
+        private readonly Timer _cleanUpTimer;
+        readonly ConcurrentDictionary<string, WebCacheEntry> _cache = new ConcurrentDictionary<string, WebCacheEntry>(StringComparer.Ordinal);
 
         public string this[string url]
         {
@@ -39,13 +39,10 @@ namespace OnlineVideos
             {
                 if (OnlineVideoSettings.Instance.CacheTimeout > 0) // only use cache if a timeout > 0 was set
                 {
-                    lock (this)
+                    WebCacheEntry result;
+                    if (_cache.TryGetValue(url, out result))
                     {
-                        WebCacheEntry result = null;
-                        if (_cache.TryGetValue(url, out result))
-                        {
-                            return result.Data;
-                        }
+                        return result.Data;
                     }
                 }
                 return null;
@@ -54,25 +51,20 @@ namespace OnlineVideos
             {
                 if (OnlineVideoSettings.Instance.CacheTimeout > 0) // only use cache if a timeout > 0 was set
                 {
-                    lock (this)
-                    {
-                        _cache[url] = new WebCacheEntry() { Data = value, LastUpdated = DateTime.Now };
-                    }
+                    _cache[url] = new WebCacheEntry { Data = value, LastUpdated = DateTime.Now };
                 }
             }
         }
 
         void CleanCache(object state)
         {
-            lock (this)
+            var cutoff = DateTime.Now.AddMinutes(-OnlineVideoSettings.Instance.CacheTimeout);
+            foreach (var key in _cache.Keys)
             {
-                List<string> outdatedKeys = new List<string>();
-
-                foreach (string key in _cache.Keys)
-                    if ((DateTime.Now - _cache[key].LastUpdated).TotalMinutes >= OnlineVideoSettings.Instance.CacheTimeout)
-                        outdatedKeys.Add(key);
-
-                foreach (string key in outdatedKeys) _cache.Remove(key);
+                if (_cache.TryGetValue(key, out WebCacheEntry entry) && entry.LastUpdated <= cutoff)
+                {
+                    _cache.TryRemove(key, out _);
+                }
             }
         }
 
@@ -263,11 +255,11 @@ namespace OnlineVideos
                 request.AllowAutoRedirect = allowAutoRedirect;
                 request.CookieContainer = cc;
                 request.Timeout = 15000;
-                // invoke getting the Response async and abort as soon as data is coming in 
-                // (according to docs - this is after headers are completely received)
+                // Begin the async response; abort the request as soon as headers arrive
+                // so we never download the body — we only need the final URL.
                 var result = request.BeginGetResponse((ar) => request.Abort(), null);
-                // wait for the completion (or abortion) of the async response
-                while (!result.IsCompleted) Thread.Sleep(10);
+                // Block the calling thread efficiently via the OS wait handle instead of spinning.
+                result.AsyncWaitHandle.WaitOne();
                 using (var httpWebresponse = request.EndGetResponse(result))
                 {
                     return GetFinalUrl(httpWebresponse);
