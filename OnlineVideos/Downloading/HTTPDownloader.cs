@@ -6,8 +6,6 @@ namespace OnlineVideos.Downloading
 {
     public class HTTPDownloader : MarshalByRefObject, IDownloader
     {
-        System.Threading.Thread _downloadThread;
-
         public bool Cancelled { get; private set; }
 
         public void CancelAsync()
@@ -20,7 +18,6 @@ namespace OnlineVideos.Downloading
             HttpWebResponse response = null;
             try
             {
-                _downloadThread = System.Threading.Thread.CurrentThread;
                 using (FileStream fs = new FileStream(downloadInfo.LocalFile, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(downloadInfo.Url);
@@ -70,7 +67,7 @@ namespace OnlineVideos.Downloading
 
         public void Abort()
         {
-            if (_downloadThread != null) _downloadThread.Abort();
+            Cancelled = true;
         }
 
         #region MarshalByRefObject overrides

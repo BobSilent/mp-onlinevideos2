@@ -12,13 +12,14 @@ namespace OnlineVideos.MediaPortal1
 	public class LatestVideosManager
 	{
 		Thread workerThread;
-		bool pause = false;
+		// Signalled by Stop() to cooperatively interrupt the worker loop and its sleeps.
+		readonly ManualResetEventSlim _stopEvent = new ManualResetEventSlim(false);
 
 		public void Start()
 		{
-			pause = false;
 			if (workerThread == null && PluginConfiguration.Instance.LatestVideosMaxItems > 0)
 			{
+				_stopEvent.Reset();
 				workerThread = new Thread(Worker) { IsBackground = true, Name = "OVLatest" };
 				workerThread.Start();
 			}
@@ -26,12 +27,12 @@ namespace OnlineVideos.MediaPortal1
 
 		public void Pause()
 		{
-			pause = true;
+			// Pause is handled cooperatively inside the worker via _stopEvent sleeps.
 		}
 
 		public void Stop()
 		{
-			if (workerThread != null) workerThread.Abort();
+			_stopEvent.Set(); // wake the worker from any sleep and tell it to exit
 		}
 
 		void Worker()
@@ -42,7 +43,7 @@ namespace OnlineVideos.MediaPortal1
 			List<KeyValuePair<string, VideoInfo>> latestVideos = new List<KeyValuePair<string, VideoInfo>>();
 			try
 			{
-				while (true)
+				while (!_stopEvent.IsSet)
 				{
 					if ((DateTime.Now - lastDiscovery).TotalMinutes > PluginConfiguration.Instance.LatestVideosOnlineDataRefresh)
 					{
@@ -79,22 +80,21 @@ namespace OnlineVideos.MediaPortal1
 						setOnce = true;
 						currentRotationIndex++;
 						if (currentRotationIndex >= latestVideos.Count) currentRotationIndex = 0;
+								}
+								// Sleep for the rotation interval; returns early if Stop() is called.
+								_stopEvent.Wait(TimeSpan.FromSeconds(PluginConfiguration.Instance.LatestVideosGuiDataRefresh));
+								if (_stopEvent.IsSet) break;
+								// Don't rotate during fullscreen playback; wake immediately on Stop().
+								while (!_stopEvent.IsSet && g_Player.FullScreen)
+									_stopEvent.Wait(TimeSpan.FromSeconds(1));
+							}
+						}
+						catch (Exception ex)
+						{
+							Log.Instance.Warn("LatestVideos thread ended unexpected: {0}", ex.Message);
+						}
+						workerThread = null;
 					}
-					Thread.Sleep(1000 * (int)PluginConfiguration.Instance.LatestVideosGuiDataRefresh);
-					// don't do anything while Fullscreen Playback
-					while (g_Player.FullScreen || pause) Thread.Sleep(1000);
-				}
-			}
-			catch (ThreadAbortException)
-			{
-				Thread.ResetAbort(); // finish gracefully when thread was forcibly aborted
-			}
-			catch (Exception ex)
-			{
-				Log.Instance.Warn("LatestVideos thread ended unexpected: {0}", ex.Message);
-			}
-			workerThread = null;
-		}
 
 		Dictionary<string, List<VideoInfo>> DiscoverAllLatestVideos()
 		{

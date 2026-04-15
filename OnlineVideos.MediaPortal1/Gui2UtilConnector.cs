@@ -10,14 +10,18 @@ namespace OnlineVideos.MediaPortal1
         # region Singleton
         protected Gui2UtilConnector()
         {
-            timeoutTimer.Elapsed += TaskWatcherTimerElapsed;
+            _timeoutTimer.Elapsed += TaskWatcherTimerElapsed;
         }
         protected static Gui2UtilConnector instance = null;
         internal static Gui2UtilConnector Instance
         {
             get
             {
-                if (instance == null) instance = new Gui2UtilConnector();
+                if (instance == null)
+                {
+                    instance = new Gui2UtilConnector();
+                }
+
                 return instance;
             }
         }
@@ -25,14 +29,18 @@ namespace OnlineVideos.MediaPortal1
 
         internal bool IsBusy { get; private set; }
 
-        Action<bool, object> _CurrentResultHandler = null;
-        object _CurrentResult = null;
-        bool? _CurrentTaskSuccess = null;
-        OnlineVideosException _CurrentError = null;
-        string _CurrentTaskDescription = null;
-        Thread backgroundThread = null;
-        bool abortedByUser = false;
-        readonly System.Timers.Timer timeoutTimer = new System.Timers.Timer(OnlineVideoSettings.Instance.UtilTimeout * 1000) { AutoReset = false };
+        private Action<bool, object> _currentResultHandler = null;
+        private object _currentResult = null;
+        private bool? _currentTaskSuccess = null;
+        private OnlineVideosException _currentError = null;
+        private string _currentTaskDescription = null;
+        private Thread _backgroundThread = null;
+        private CancellationTokenSource _cts = null;
+        private bool _abortedByUser = false;
+        private readonly System.Timers.Timer _timeoutTimer = new System.Timers.Timer(OnlineVideoSettings.Instance.UtilTimeout * 1000)
+        { 
+            AutoReset = false 
+        };
 
         public void StopBackgroundTask()
         {
@@ -41,11 +49,11 @@ namespace OnlineVideos.MediaPortal1
 
         void StopBackgroundTask(bool byUserRequest)
         {
-            if (IsBusy && _CurrentTaskSuccess == null && backgroundThread != null && backgroundThread.IsAlive)
+            if (IsBusy && _currentTaskSuccess == null && _backgroundThread != null && _backgroundThread.IsAlive)
             {
                 Log.Instance.Info("Aborting background thread{0}.", byUserRequest ? " by User Request" : "");
-                backgroundThread.Abort();
-                abortedByUser = byUserRequest;
+                _cts?.Cancel();
+                _abortedByUser = byUserRequest;
                 return;
             }
         }
@@ -80,32 +88,33 @@ namespace OnlineVideos.MediaPortal1
                 try
                 {
                     IsBusy = true;
-                    abortedByUser = false;
-                    _CurrentResultHandler = resultHandler;
-                    _CurrentTaskDescription = taskDescription;
-                    _CurrentResult = null;
-                    _CurrentError = null;
-                    _CurrentTaskSuccess = null;// while this is null the task has not finished (or later on timeouted), true indicates successfull completion and false error
+                    _abortedByUser = false;
+                    _currentResultHandler = resultHandler;
+                    _currentTaskDescription = taskDescription;
+                    _currentResult = null;
+                    _currentError = null;
+                    _currentTaskSuccess = null;// while this is null the task has not finished (or later on timeouted), true indicates successfull completion and false error
+                    _cts = new CancellationTokenSource();
+                    var token = _cts.Token;
                     GUIWaitCursor.Init(); GUIWaitCursor.Show(); // init and show the wait cursor in MediaPortal
-                    backgroundThread = new Thread(delegate ()
+                    _backgroundThread = new Thread(delegate ()
                     {
                         try
                         {
-                            _CurrentResult = task.Invoke();
-                            _CurrentTaskSuccess = true;
-                        }
-                        catch (ThreadAbortException)
-                        {
-                            if (!abortedByUser) Log.Instance.Warn("Timeout waiting for results.");
-                            Thread.ResetAbort();
+                            _currentResult = task.Invoke();
+                            // Only mark success if we were not cancelled during or after the call.
+                            if (!token.IsCancellationRequested)
+                            {
+                                _currentTaskSuccess = true;
+                            }
                         }
                         catch (Exception threadException)
                         {
-                            _CurrentError = threadException as OnlineVideosException;
+                            _currentError = threadException as OnlineVideosException;
                             Log.Instance.Warn(threadException.Message);
-                            _CurrentTaskSuccess = false;
+                            _currentTaskSuccess = false;
                         }
-                        timeoutTimer.Stop();
+                        _timeoutTimer.Stop();
                         // hide the wait cursor
                         GUIWaitCursor.Hide();
                         // execute the ResultHandler on the Main Thread
@@ -113,8 +122,12 @@ namespace OnlineVideos.MediaPortal1
                     })
                     { Name = "OnlineVideos", IsBackground = true };
                     // disable timeout when debugging
-                    if (timeout && !System.Diagnostics.Debugger.IsAttached) timeoutTimer.Start();
-                    backgroundThread.Start();
+                    if (timeout && !System.Diagnostics.Debugger.IsAttached)
+                    {
+                        _timeoutTimer.Start();
+                    }
+
+                    _backgroundThread.Start();
                     // successfully started the background task
                     return true;
                 }
@@ -122,7 +135,7 @@ namespace OnlineVideos.MediaPortal1
                 {
                     Log.Instance.Error(ex);
                     IsBusy = false;
-                    _CurrentResultHandler = null;
+                    _currentResultHandler = null;
                     GUIWaitCursor.Hide(); // hide the wait cursor
                     return false; // could not start the background task
                 }
@@ -136,23 +149,26 @@ namespace OnlineVideos.MediaPortal1
 
         void ExecuteTaskResultHandler()
         {
-            if (!IsBusy) return;
+            if (!IsBusy)
+            {
+                return;
+            }
 
             // show an error message if task was not completed successfully
-            if (_CurrentTaskSuccess != true)
+            if (_currentTaskSuccess != true)
             {
-                if (_CurrentError != null)
+                if (_currentError != null)
                 {
                     MediaPortal.Dialogs.GUIDialogOK dlg_error = (MediaPortal.Dialogs.GUIDialogOK)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_OK);
                     if (dlg_error != null)
                     {
                         dlg_error.Reset();
                         dlg_error.SetHeading(PluginConfiguration.Instance.BasicHomeScreenName);
-                        if (_CurrentError.ShowCurrentTaskDescription)
+                        if (_currentError.ShowCurrentTaskDescription)
                         {
-                            dlg_error.SetLine(1, string.Format("{0} {1}", Translation.Instance.Error, _CurrentTaskDescription));
+                            dlg_error.SetLine(1, string.Format("{0} {1}", Translation.Instance.Error, _currentTaskDescription));
                         }
-                        dlg_error.SetLine(2, _CurrentError.Message);
+                        dlg_error.SetLine(2, _currentError.Message);
                         dlg_error.DoModal(GUIWindowManager.ActiveWindow);
                     }
                 }
@@ -164,30 +180,40 @@ namespace OnlineVideos.MediaPortal1
                         dlg_error.Reset();
                         dlg_error.SetImage(SiteImageExistenceCache.GetImageForSite("OnlineVideos", type: "Icon"));
                         dlg_error.SetHeading(PluginConfiguration.Instance.BasicHomeScreenName);
-                        if (_CurrentTaskSuccess.HasValue)
-                            dlg_error.SetText(string.Format("{0} {1}", Translation.Instance.Error, _CurrentTaskDescription));
+                        if (_currentTaskSuccess.HasValue)
+                        {
+                            dlg_error.SetText(string.Format("{0} {1}", Translation.Instance.Error, _currentTaskDescription));
+                        }
                         else
-                            dlg_error.SetText(string.Format("{0} {1}", Translation.Instance.Timeout, _CurrentTaskDescription));
-                        if (!abortedByUser) dlg_error.DoModal(GUIWindowManager.ActiveWindow);
+                        {
+                            dlg_error.SetText(string.Format("{0} {1}", Translation.Instance.Timeout, _currentTaskDescription));
+                        }
+
+                        if (!_abortedByUser)
+                        {
+                            dlg_error.DoModal(GUIWindowManager.ActiveWindow);
+                        }
                     }
                 }
             }
 
             // store info needed to invoke the result handler
-            bool stored_TaskSuccess = _CurrentTaskSuccess == true;
-            var stored_Handler = _CurrentResultHandler;
-            object stored_ResultObject = _CurrentResult;
+            bool stored_TaskSuccess = _currentTaskSuccess == true;
+            var stored_Handler = _currentResultHandler;
+            object stored_ResultObject = _currentResult;
 
             // clear all fields and allow execution of another background task 
             // before actually executing the result handler -> this way a result handler can also inovke another background task)
-            _CurrentResultHandler = null;
-            _CurrentResult = null;
-            _CurrentTaskSuccess = null;
-            _CurrentError = null;
-            backgroundThread = null;
-            abortedByUser = false;
+            _currentResultHandler = null;
+            _currentResult = null;
+            _currentTaskSuccess = null;
+            _currentError = null;
+            _backgroundThread = null;
+            _cts?.Dispose();
+            _cts = null;
+            _abortedByUser = false;
             IsBusy = false;
-            timeoutTimer.Stop();
+            _timeoutTimer.Stop();
             Monitor.Exit(this);
 
             // execute the result handler
