@@ -7,14 +7,38 @@ namespace OnlineVideos.Helpers
 {
     public static class StringUtils
     {
+        // Pre-compiled static patterns — paid once at class-load time, faster on every subsequent call.
+
+        // ToFriendlyCase: insert space before each uppercase letter (except the first)
+        private static readonly Regex _reFriendlyCase =
+            new Regex("(?!^)([A-Z])", RegexOptions.Compiled);
+
+        // ReplaceEscapedUnicodeCharacter: \uXXXX or %uXXXX sequences
+        private static readonly Regex _reEscapedUnicode =
+            new Regex(@"(?:\\|%)[uU]([0-9A-Fa-f]{4})", RegexOptions.Compiled);
+
+        // PlainTextFromHtml: double-space collapse, <br/> variants, any HTML tag, repeated newlines
+        private static readonly Regex _reDoubleSpace =
+            new Regex(@"  +", RegexOptions.Multiline | RegexOptions.Compiled);
+        private static readonly Regex _reBrTag =
+            new Regex(@"< *br */*>", RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
+        private static readonly Regex _reHtmlTag =
+            new Regex(@"<[^>]*>", RegexOptions.Multiline | RegexOptions.Compiled);
+        private static readonly Regex _reMultipleNewlines =
+            new Regex(@"(\r?\n)+", RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
+
+        // Tokenize: whitespace splitter used after token replacement
+        private static readonly Regex _reWhitespace =
+            new Regex(@"\s", RegexOptions.Compiled);
+
         public static string ToFriendlyCase(string PascalString)
         {
-            return Regex.Replace(PascalString, "(?!^)([A-Z])", " $1");
+            return _reFriendlyCase.Replace(PascalString, " $1");
         }
 
         public static string ReplaceEscapedUnicodeCharacter(string input)
         {
-            return Regex.Replace(input, @"(?:\\|%)[uU]([0-9A-Fa-f]{4})",
+            return _reEscapedUnicode.Replace(input,
                 match => ((char)Int32.Parse(match.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
 
@@ -39,7 +63,7 @@ namespace OnlineVideos.Helpers
                 if (dropToken)
                 {
                     string output = RE.Replace(text, " ");
-                    return (new Regex(@"\s").Split(output));
+                    return _reWhitespace.Split(output);
                 }
                 else
                     return (RE.Split(text));
@@ -55,20 +79,20 @@ namespace OnlineVideos.Helpers
                 // decode HTML escape character
                 result = System.Web.HttpUtility.HtmlDecode(result);
 
-                // Replace &nbsp; with space
-                result = Regex.Replace(result, @"&nbsp;", " ", RegexOptions.Multiline);
+                // Replace &nbsp; with space (plain string replace — no regex needed)
+                result = result.Replace("&nbsp;", " ");
 
                 // Remove double spaces
-                result = Regex.Replace(result, @"  +", "", RegexOptions.Multiline);
+                result = _reDoubleSpace.Replace(result, "");
 
                 // Replace <br/> with \n
-                result = Regex.Replace(result, @"< *br */*>", "\n", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                result = _reBrTag.Replace(result, "\n");
 
-                // Remove remaining HTML tags                
-                result = Regex.Replace(result, @"<[^>]*>", "", RegexOptions.Multiline);
+                // Remove remaining HTML tags
+                result = _reHtmlTag.Replace(result, "");
 
                 // Replace multiple newlines with just one
-                result = Regex.Replace(result, @"(\r?\n)+", "\n", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                result = _reMultipleNewlines.Replace(result, "\n");
 
                 // Remove whitespace at the beginning and end
                 result = result.Trim();
