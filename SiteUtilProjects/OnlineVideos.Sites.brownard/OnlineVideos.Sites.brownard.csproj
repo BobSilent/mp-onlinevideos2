@@ -1,88 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1DCE9E7A-4B28-4B38-B0F7-909E1F089F4A}</ProjectGuid>
+    <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OnlineVideos.Sites</RootNamespace>
-    <AssemblyName>OnlineVideos.Sites.brownard</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
     <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\OnlineVideos\OnlineVideos.csproj">
-      <Project>{E0D9D390-CDD6-4B98-86F3-6EB04A958882}</Project>
-      <Name>OnlineVideos</Name>
-      <Private>False</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\..\OnlineVideos\OnlineVideos.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack">
-      <HintPath>..\..\OnlineVideos\bin\$(Configuration)\HtmlAgilityPack.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\OnlineVideos\bin\$(Configuration)\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BBCiPlayerUtil.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="LivetvruUtil.cs" />
-    <Compile Include="FootballStreamingInfoUtil.cs" />
-    <Compile Include="FourodUtil.cs" />
-    <Compile Include="TransponderTVUtil.cs" />
-    <Compile Include="Utils\FourodDecrypter.cs" />
-    <Compile Include="ITVPlayerUtil.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\HlsPlaylistParser.cs" />
-    <Compile Include="Utils\StreamComparer.cs" />
-    <Compile Include="Utils\SubCatHolder.cs" />
-    <Compile Include="Utils\SubtitleReader.cs" />
-    <Compile Include="Utils\AceStreamEngine\AsyncSocket.cs" />
-    <Compile Include="Utils\AceStreamEngine\Data.cs" />
-    <Compile Include="Utils\AceStreamEngine\AceStreamEngine.cs" />
-    <Compile Include="Utils\TVGuideGrabber.cs" />
-    <Compile Include="Utils\YouTubeShowHandler.cs" />
-    <Compile Include="WiziwigUtil.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
