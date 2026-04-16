@@ -8,3 +8,23 @@ Converted OnlineVideos/OnlineVideos.csproj to SDK-style. Fixed: SubtitleDownload
 
 Converted MPEI/Webview2/Webview2Installer.csproj to SDK-style. Clean conversion, no issues. 0 errors, 0 warnings.
 
+
+## [2026-04-16 14:34] 03-sites-brownard
+
+Converted OnlineVideos.Sites.brownard to SDK-style. Fixed CS0433 type ambiguity from SubtitleDownloader's bundled HtmlAgilityPack by adding PrivateAssets=all to SubtitleDownloader in OnlineVideos.csproj. Removed stale HintPath refs for HtmlAgilityPack and Newtonsoft.Json. 0 errors, 0 warnings.
+
+
+## [2026-04-16 14:39] 04-mediaportal1
+
+Converted OnlineVideos.MediaPortal1 to SDK-style. Fixed NETSDK1022 duplicate Compile (VlcEventHandler'.cs Include→Update) and MSB3823 non-string resources (GenerateResourceUsePreserializedResources=true). packages.config removed. 0 errors, 0 warnings.
+
+
+## [2026-04-16 14:41] 05-siteparser
+
+Converted SiteParser to SDK-style. Fixed MSB3823 non-string resources with GenerateResourceUsePreserializedResources=true. 0 errors, 0 warnings.
+
+
+## [2026-04-16 14:43] 06-sites-doskabouter
+
+Converted OnlineVideos.Sites.doskabouter to SDK-style. Clean conversion. 0 errors, 5 pre-existing CS8632 nullable warnings (not introduced by conversion).
+

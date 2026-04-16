@@ -1,4 +1,4 @@
-﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Json;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
@@ -27,13 +27,13 @@ namespace OnlineVideos.Sites
             {
                 var serialized = NewtonsoftJsonSerializer.Instance.Serialize(value);
                 OnlineVideoSettings.Instance.UserStore.SetValue(PREFIX + key, serialized, true);
-                return TaskEx.Delay(0);
+                return Task.Delay(0);
             }
 
             public Task DeleteAsync<T>(string key)
             {
                 OnlineVideoSettings.Instance.UserStore.SetValue(PREFIX + key, null);
-                return TaskEx.Delay(0);
+                return Task.Delay(0);
             }
 
             public Task<T> GetAsync<T>(string key)
@@ -60,7 +60,7 @@ namespace OnlineVideos.Sites
 
             public Task ClearAsync()
             {
-                return TaskEx.Delay(0);
+                return Task.Delay(0);
             }
         }
 

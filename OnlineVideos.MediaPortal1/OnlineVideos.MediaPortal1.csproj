@@ -1,43 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F229AF99-6CB8-48C7-81EF-BDAD4C2F0EC7}</ProjectGuid>
+    <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OnlineVideos.MediaPortal1</RootNamespace>
-    <AssemblyName>OnlineVideos.MediaPortal1</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
     <NoWarn>MSB3270</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AxInterop.WMPLib">
@@ -89,29 +63,15 @@
     <Reference Include="MediaInfo.Wrapper">
       <HintPath>$(MediaPortalInstallPath)\MediaInfo.Wrapper.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.2277.86, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
-      <HintPath>..\Packages\Microsoft.Web.WebView2.1.0.2277.86\lib\net45\Microsoft.Web.WebView2.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.WebView2.WinForms, Version=1.0.2277.86, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
-      <HintPath>..\Packages\Microsoft.Web.WebView2.1.0.2277.86\lib\net45\Microsoft.Web.WebView2.WinForms.dll</HintPath>
-    </Reference>
     <Reference Include="RemotePlugins">
       <HintPath>$(MediaPortalInstallPath)\RemotePlugins.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="TraktAPI">
       <HintPath>Trakt\TraktAPI.dll</HintPath>
     </Reference>
@@ -125,394 +85,78 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\CodecConfiguration.cs" />
-    <Compile Include="Configuration\Configuration.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\Configuration.Designer.cs">
-      <DependentUpon>Configuration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\ConfigurationPlayer.cs" />
-    <Compile Include="Configuration\CreateEditSite.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\CreateEditSite.Designer.cs">
-      <DependentUpon>CreateEditSite.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\DataboundTreeNode.cs" />
-    <Compile Include="Configuration\ImExportXml.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\ImExportXml.Designer.cs">
-      <DependentUpon>ImExportXml.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\ImportGlobalSite.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\ImportGlobalSite.Designer.cs">
-      <DependentUpon>ImportGlobalSite.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\ObjectListView\CellEditing\CellEditKeyEngine.cs" />
-    <Compile Include="Configuration\ObjectListView\CellEditing\CellEditors.cs" />
-    <Compile Include="Configuration\ObjectListView\CellEditing\EditorRegistry.cs" />
-    <Compile Include="Configuration\ObjectListView\DataListView.cs">
+    <Compile Update="Configuration\ObjectListView\DataListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\DragDrop\DragSource.cs" />
-    <Compile Include="Configuration\ObjectListView\DragDrop\DropSink.cs" />
-    <Compile Include="Configuration\ObjectListView\DragDrop\OLVDataObject.cs" />
-    <Compile Include="Configuration\ObjectListView\FastDataListView.cs">
+    <Compile Update="Configuration\ObjectListView\FastDataListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\FastObjectListView.cs">
+    <Compile Update="Configuration\ObjectListView\FastObjectListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\Filtering\Cluster.cs" />
-    <Compile Include="Configuration\ObjectListView\Filtering\ClusteringStrategy.cs" />
-    <Compile Include="Configuration\ObjectListView\Filtering\ClustersFromGroupsStrategy.cs" />
-    <Compile Include="Configuration\ObjectListView\Filtering\DateTimeClusteringStrategy.cs" />
-    <Compile Include="Configuration\ObjectListView\Filtering\FilterMenuBuilder.cs" />
-    <Compile Include="Configuration\ObjectListView\Filtering\Filters.cs" />
-    <Compile Include="Configuration\ObjectListView\Filtering\ICluster.cs" />
-    <Compile Include="Configuration\ObjectListView\Filtering\IClusteringStrategy.cs" />
-    <Compile Include="Configuration\ObjectListView\Filtering\TextMatchFilter.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\Attributes.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\Comparers.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\DataSourceAdapter.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\Delegates.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\Enums.cs">
+    <Compile Update="Configuration\ObjectListView\Implementation\Enums.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\Implementation\Events.cs">
+    <Compile Update="Configuration\ObjectListView\Implementation\Events.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\Implementation\GroupingParameters.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\Groups.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\Munger.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\NativeMethods.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\NullableDictionary.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\OLVListItem.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\OLVListSubItem.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\OlvListViewHitTestInfo.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\VirtualGroups.cs" />
-    <Compile Include="Configuration\ObjectListView\Implementation\VirtualListDataSource.cs" />
-    <Compile Include="Configuration\ObjectListView\ObjectListView.cs">
+    <Compile Update="Configuration\ObjectListView\ObjectListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\ObjectListView.DesignTime.cs" />
-    <Compile Include="Configuration\ObjectListView\OLVColumn.cs">
+    <Compile Update="Configuration\ObjectListView\OLVColumn.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\Rendering\Adornments.cs" />
-    <Compile Include="Configuration\ObjectListView\Rendering\Decorations.cs" />
-    <Compile Include="Configuration\ObjectListView\Rendering\Overlays.cs" />
-    <Compile Include="Configuration\ObjectListView\Rendering\Renderers.cs">
+    <Compile Update="Configuration\ObjectListView\Rendering\Renderers.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\Rendering\Styles.cs">
+    <Compile Update="Configuration\ObjectListView\Rendering\Styles.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\Rendering\TreeRenderer.cs">
+    <Compile Update="Configuration\ObjectListView\Rendering\TreeRenderer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\SubControls\GlassPanelForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\ObjectListView\SubControls\HeaderControl.cs" />
-    <Compile Include="Configuration\ObjectListView\SubControls\ToolStripCheckedListBox.cs">
+    <Compile Update="Configuration\ObjectListView\SubControls\ToolStripCheckedListBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\SubControls\ToolTipControl.cs" />
-    <Compile Include="Configuration\ObjectListView\TreeListView.cs">
+    <Compile Update="Configuration\ObjectListView\TreeListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\ObjectListView\Utilities\ColumnSelectionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\ObjectListView\Utilities\ColumnSelectionForm.Designer.cs">
-      <DependentUpon>ColumnSelectionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\ObjectListView\Utilities\Generator.cs" />
-    <Compile Include="Configuration\ObjectListView\Utilities\TypedObjectListView.cs" />
-    <Compile Include="Configuration\ObjectListView\VirtualObjectListView.cs">
+    <Compile Update="Configuration\ObjectListView\VirtualObjectListView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\PluginConfiguration.cs" />
-    <Compile Include="Configuration\PreferredListControl.cs">
+    <Compile Update="Configuration\PreferredListControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Configuration\PreferredListControl.Designer.cs">
-      <DependentUpon>PreferredListControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\RegisterEmail.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\RegisterEmail.Designer.cs">
-      <DependentUpon>RegisterEmail.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\RtmpUrlGenerator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\RtmpUrlGenerator.Designer.cs">
-      <DependentUpon>RtmpUrlGenerator.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\SubmitSiteReport.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Configuration\SubmitSiteReport.Designer.cs">
-      <DependentUpon>SubmitSiteReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\TablessTabControl .cs">
+    <Compile Update="Configuration\TablessTabControl .cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\UserStore.cs" />
-    <Compile Include="FavoritesDatabase.cs" />
-    <Compile Include="Gui2UtilConnector.cs" />
-    <Compile Include="GUIOnlineVideos.cs" />
-    <Compile Include="GUISiteUpdater.cs" />
-    <Compile Include="Initialization.cs">
+    <Compile Update="Initialization.cs">
       <DependentUpon>GUIOnlineVideos.cs</DependentUpon>
     </Compile>
-    <Compile Include="LatestVideosManager.cs" />
-    <Compile Include="LoadParameterInfo.cs" />
-    <Compile Include="Log.cs" />
-    <Compile Include="NavigationContextSwitch.cs" />
-    <Compile Include="OnlineVideosGuiListItem.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\BaseWindow.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\DialogWindow.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\BaseElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\ButtonElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\CheckMarkElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\FadeLabelElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\ImageCache.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\ImageElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\TVProgressControlElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\LabelElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\ListElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\ProgressControlElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\SliderElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\TextScrollUpElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\CheckButtonElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\VerticalScrollbarElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\Elements\VolumeBarElement.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\FloatingWindow.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\FullscreenWindow.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\OSDController.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\OSDForm.cs" />
-    <Compile Include="Player\ExternalOSDLibrary\OSDWindow.cs" />
-    <Compile Include="Player\FilterError.cs" />
-    <Compile Include="Player\GUIOnlineVideoFullscreen.cs" />
-    <Compile Include="Player\GUIOnlineVideoOSD.cs" />
-    <Compile Include="Player\LavSplitterSourceInterfaces.cs" />
-    <Compile Include="Player\OnlineVideosPlayer.cs" />
-    <Compile Include="Player\PlayerFactory.cs" />
-    <Compile Include="Player\PlayListItem.cs" />
-    <Compile Include="Player\RefreshRateHelper.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\CommonStrings.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\EventsHelper.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\HandleManager.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\IntPtrExtensions.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcAsynchronousEvents.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcAudio.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcErrorHandling.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcFunction.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcFunctionAttribute.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcInteropsManager.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcLogging.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcMedia.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcMediaList.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcMediaListPlayer.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcMediaPlayer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcMediaPlayerAudio.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcMediaPlayerVideo.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\LibVlcVideo.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\MonoInterop.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\Signatures\LibVlcInterop.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\Signatures\LibVlcInterop.Events.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\Signatures\LibVlcInterop.Media.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\Signatures\LibVlcInterop.MediaList.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\Signatures\LibVlcInterop.MediaListPlayer.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\Signatures\LibVlcInterop.MediaPlayer.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\Signatures\LibVlcInterop.Structures.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Interop\Win32Interop.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\IVlcControl.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Medias\EmptyMedia.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Medias\LocationMedia.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Medias\MediaBase.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Medias\PathMedia.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Medias\VlcMediaMetadatas.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\Medias\VlcMediaTrackInfos.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcAudioOutputDevice.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcAudioOutputDevices.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcContext.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcDeinterlaceModes.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcErrorHandling.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcEventArgs.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcEventHandler%27.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcLogMessage.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcLogOptions.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcLogProperties.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcLogVerbosities.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcMediaList.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcMediaListPlayer.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcStartupOptions.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcTrackDescription.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Forms\VlcAudioProperties.Common.cs" />
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Forms\VlcControl.Common.cs">
+    <Compile Update="Player\Vlc.DotNet\Vlc.DotNet.Core\VlcEventHandler%27.cs" />
+    <Compile Update="Player\Vlc.DotNet\Vlc.DotNet.Forms\VlcControl.Common.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Forms\VlcControl.cs">
+    <Compile Update="Player\Vlc.DotNet\Vlc.DotNet.Forms\VlcControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Forms\VlcLogOptions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Player\Vlc.DotNet\Vlc.DotNet.Forms\VlcVideoProperties.Common.cs" />
-    <Compile Include="Player\VLCPlayer.cs" />
-    <Compile Include="Player\WebViewPlayer.cs" />
-    <Compile Include="Player\WMPVideoPlayer.cs" />
     <Compile Include="..\Build\Version.cs">
       <Link>Properties\Version.cs</Link>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="SiteImageExistenceCache.cs" />
-    <Compile Include="SitesGroup.cs" />
-    <Compile Include="SiteUserSettingsDialog.cs" />
-    <Compile Include="SmsT9Filter.cs" />
-    <Compile Include="Trakt\TraktPluginHelper.cs" />
-    <Compile Include="Translator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Configuration\CreateEditSite.resx">
-      <DependentUpon>CreateEditSite.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Configuration\ObjectListView\Utilities\ColumnSelectionForm.resx">
-      <DependentUpon>ColumnSelectionForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Configuration\PreferredListControl.resx">
-      <DependentUpon>PreferredListControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Configuration\RtmpUrlGenerator.resx">
-      <DependentUpon>RtmpUrlGenerator.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="OnlineVideos.ico" />
     <EmbeddedResource Include="OnlineVideos.png" />
     <EmbeddedResource Include="OnlineVideosDisabled.png" />
-    <None Include="packages.config" />
-    <None Include="Properties\DataSources\OnlineVideos.Channel.datasource" />
-    <None Include="Properties\DataSources\OnlineVideos.Group.datasource" />
-    <None Include="Properties\DataSources\RssLink.datasource" />
-    <None Include="Properties\DataSources\SiteSettings.datasource" />
-    <None Include="Properties\DataSources\SitesGroup.datasource" />
-    <None Include="Resources\Add.png" />
-    <None Include="Resources\Delete.png" />
-    <None Include="Resources\Down.png" />
-    <None Include="Resources\Import.png" />
-    <None Include="Resources\ImportGlobal.png" />
-    <None Include="Resources\ImportXml.png" />
-    <None Include="Resources\NewFolder.png" />
-    <None Include="Resources\NewReport.png" />
-    <None Include="Resources\PublishToWeb.png" />
-    <None Include="Resources\Save.png" />
-    <None Include="Resources\Up.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Configuration\Configuration.resx">
-      <DependentUpon>Configuration.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Configuration\ImExportXml.resx">
-      <DependentUpon>ImExportXml.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Configuration\ImportGlobalSite.resx">
-      <DependentUpon>ImportGlobalSite.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Configuration\RegisterEmail.resx">
-      <DependentUpon>RegisterEmail.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Configuration\SubmitSiteReport.resx">
-      <DependentUpon>SubmitSiteReport.cs</DependentUpon>
-    </EmbeddedResource>
+    <ProjectReference Include="..\OnlineVideos\OnlineVideos.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OnlineVideos\OnlineVideos.csproj">
-      <Project>{E0D9D390-CDD6-4B98-86F3-6EB04A958882}</Project>
-      <Name>OnlineVideos</Name>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CreateSite.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\timeout.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\cache.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\thumbnail.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\search.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\key.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\help.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Latest.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\clear-filter.png" />
-    <None Include="Resources\filter-icons3.png" />
-    <None Include="Resources\filter.png" />
-    <None Include="Resources\sort-ascending.png" />
-    <None Include="Resources\sort-descending.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\edit.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\rss.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tv.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\flash.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="build.targets">
+    <None Update="build.targets">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="build.targets" />
-  <Import Project="..\Packages\Microsoft.Web.WebView2.1.0.2277.86\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\Packages\Microsoft.Web.WebView2.1.0.2277.86\build\Microsoft.Web.WebView2.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\Packages\Microsoft.Web.WebView2.1.0.2277.86\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\Packages\Microsoft.Web.WebView2.1.0.2277.86\build\Microsoft.Web.WebView2.targets'))" />
-  </Target>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2277.86" />
+  </ItemGroup>
 </Project>
