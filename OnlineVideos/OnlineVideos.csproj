@@ -1,390 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E0D9D390-CDD6-4B98-86F3-6EB04A958882}</ProjectGuid>
+    <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OnlineVideos</RootNamespace>
-    <AssemblyName>OnlineVideos</AssemblyName>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <NoStdLib>False</NoStdLib>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <FileAlignment>4096</FileAlignment>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <StartAction>Program</StartAction>
     <StartProgram>$(MediaPortalInstallPath)\mediaportal.exe</StartProgram>
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <StartWorkingDirectory>$(MediaPortalInstallPath)</StartWorkingDirectory>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.11.46.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\Packages\HtmlAgilityPack.1.11.46\lib\Net45\HtmlAgilityPack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.2277.86, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
-      <HintPath>..\Packages\Microsoft.Web.WebView2.1.0.2277.86\lib\net45\Microsoft.Web.WebView2.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Web.WebView2.WinForms, Version=1.0.2277.86, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
-      <HintPath>..\Packages\Microsoft.Web.WebView2.1.0.2277.86\lib\net45\Microsoft.Web.WebView2.WinForms.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\Packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="SubtitleDownloader, Version=3.1.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Packages\SubtitleDownloader.3.1.4\lib\net40\SubtitleDownloader.dll</HintPath>
-      <Aliases>OVSubs</Aliases>
-    </Reference>
-    <Reference Include="System" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1Encodable.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1EncodableVector.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1Exception.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1InputStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1Null.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1Object.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1OctetString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\ASN1OctetStringParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1OutputStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1ParsingException.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1Sequence.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\ASN1SequenceParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1Set.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\ASN1SetParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\ASN1StreamParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1TaggedObject.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\ASN1TaggedObjectParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\Asn1Tags.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BerApplicationSpecific.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BerApplicationSpecificParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BerOctetString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BEROctetStringParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BerOutputStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BerSequence.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BERSequenceParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BerSet.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BERSetParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BerTaggedObject.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\BERTaggedObjectParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\ConstructedOctetStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DefiniteLengthInputStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerApplicationSpecific.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerBitString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerBMPString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerBoolean.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerEnumerated.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DERExternal.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DERExternalParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerGeneralizedTime.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerGeneralString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerIA5String.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerInteger.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerNull.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerNumericString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerObjectIdentifier.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerOctetString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DEROctetStringParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerOutputStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerPrintableString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerSequence.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DERSequenceParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerSet.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DERSetParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerStringBase.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerT61String.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerTaggedObject.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerUniversalString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerUnknownTag.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerUTCTime.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerUTF8String.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\DerVisibleString.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\IAsn1ApplicationSpecificParser.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\IAsn1Choice.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\IAsn1Convertible.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\IAsn1String.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\IndefiniteLengthInputStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\LimitedInputStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\OidTokenizer.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\pkcs\PKCSObjectIdentifiers.cs" />
-    <Compile Include="3rdParty\BouncyCastle\asn1\util\FilterStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\agreement\DHAgreement.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\agreement\DHBasicAgreement.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\AsymmetricCipherKeyPair.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\AsymmetricKeyParameter.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\CryptoException.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\DataLengthException.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\digests\GeneralDigest.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\digests\Sha1Digest.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\digests\Sha256Digest.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\engines\BlowfishEngine.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\engines\RC4Engine.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\generators\DHBasicKeyPairGenerator.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\generators\DHKeyGeneratorHelper.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\generators\DHKeyPairGenerator.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\IAsymmetricCipherKeyPairGenerator.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\IBasicAgreement.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\IBlockCipher.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\ICipherParameters.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\IDigest.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\IStreamCipher.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\KeyGenerationParameters.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\parameters\DHKeyGenerationParameters.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\parameters\DHKeyParameters.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\parameters\DHParameters.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\parameters\DHPrivateKeyParameters.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\parameters\DHPublicKeyParameters.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\parameters\DHValidationParameters.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\parameters\KeyParameter.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\parameters\ParametersWithRandom.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\prng\DigestRandomGenerator.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\prng\IRandomGenerator.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\prng\ReversedWindowGenerator.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\prng\ThreadedSeedGenerator.cs" />
-    <Compile Include="3rdParty\BouncyCastle\crypto\util\Pack.cs" />
-    <Compile Include="3rdParty\BouncyCastle\math\BigInteger.cs" />
-    <Compile Include="3rdParty\BouncyCastle\security\SecureRandom.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\Arrays.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\BigIntegers.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\collections\CollectionUtilities.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\collections\ISet.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\collections\UnmodifiableDictionary.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\collections\UnmodifiableDictionaryProxy.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\collections\UnmodifiableList.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\collections\UnmodifiableListProxy.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\collections\UnmodifiableSet.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\collections\UnmodifiableSetProxy.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\encoders\Hex.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\encoders\HexEncoder.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\encoders\IEncoder.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\io\BaseInputStream.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\io\StreamOverflowException.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\io\Streams.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\Platform.cs" />
-    <Compile Include="3rdParty\BouncyCastle\util\Strings.cs" />
-    <Compile Include="Configuration\OnlineVideoSettings.cs" />
-    <Compile Include="Configuration\SiteSettings.cs" />
-    <Compile Include="Consts.cs" />
-    <Compile Include="CrossDomain\OnlineVideosAppDomain.cs" />
-    <Compile Include="CrossDomain\PluginLoader.cs" />
-    <Compile Include="CrossDomain\CrossDomanSingletonBase.cs" />
-    <Compile Include="CrossDomain\PropertyChangedMarshaled.cs" />
-    <Compile Include="DetailVideoInfo.cs" />
-    <Compile Include="Downloading\DownloadList.cs" />
-    <Compile Include="Downloading\DownloadManager.cs" />
-    <Compile Include="Downloading\IDownloader.cs" />
-    <Compile Include="Downloading\OnlineVideosDownloader.cs" />
-    <Compile Include="Helpers\AsxUtils.cs" />
-    <Compile Include="Helpers\CursorHelper.cs" />
-    <Compile Include="Downloading\DownloadInfo.cs" />
-    <Compile Include="Downloading\HTTPDownloader.cs" />
-    <Compile Include="Downloading\ImageDownloader.cs" />
-    <Compile Include="Downloading\MMSDownloader.cs" />
-    <Compile Include="Helpers\CollectionUtils.cs" />
-    <Compile Include="Helpers\DotNetFrameworkHelper.cs" />
-    <Compile Include="Helpers\EncryptionUtils.cs" />
-    <Compile Include="Helpers\FileUtils.cs" />
-    <Compile Include="Helpers\HlsPlaylistParser.cs" />
-    <Compile Include="Helpers\RssUtils.cs" />
-    <Compile Include="Helpers\StringHash.cs" />
-    <Compile Include="Helpers\StringUtils.cs" />
-    <Compile Include="Helpers\TimeUtils.cs" />
-    <Compile Include="Helpers\UriUtils.cs" />
-    <Compile Include="Helpers\WebviewHelper.cs" />
-    <Compile Include="Helpers\WebViewHelperInitializer.cs" />
-    <Compile Include="Hoster\Base\HosterBase.cs" />
-    <Compile Include="Hoster\Base\HosterFactory.cs" />
-    <Compile Include="Hoster\Base\ISubtitle.cs" />
-    <Compile Include="LocalizableDisplayNameAttribute.cs" />
-    <Compile Include="ILog.cs" />
-    <Compile Include="MixedUrl.cs" />
-    <Compile Include="MPUrlSourceFilter\AfhsManifestUrl.cs" />
-    <Compile Include="MPUrlSourceFilter\Http\HttpHeader.cs" />
-    <Compile Include="MPUrlSourceFilter\Http\HttpHeaderCollection.cs" />
-    <Compile Include="MPUrlSourceFilter\ProxyServerType.cs" />
-    <Compile Include="MPUrlSourceFilter\UserSettings\ExpandableUserSettingObjectConverter.cs" />
-    <Compile Include="MPUrlSourceFilter\Downloader.cs" />
-    <Compile Include="MPUrlSourceFilter\HttpUrl.cs" />
-    <Compile Include="MPUrlSourceFilter\UserSettings\HttpUrlSettings.cs" />
-    <Compile Include="MPUrlSourceFilter\Interfaces\IDownload.cs" />
-    <Compile Include="MPUrlSourceFilter\Interfaces\IDownloadCallback.cs" />
-    <Compile Include="MPUrlSourceFilter\Interfaces\IFilterState.cs" />
-    <Compile Include="MPUrlSourceFilter\Interfaces\IFilterStateEx.cs" />
-    <Compile Include="MPUrlSourceFilter\UrlBuilder.cs" />
-    <Compile Include="MPUrlSourceFilter\LogVerbosity.cs" />
-    <Compile Include="MPUrlSourceFilter\UserSettings\NetworkInterfaceConverter.cs" />
-    <Compile Include="MPUrlSourceFilter\Parameter.cs" />
-    <Compile Include="MPUrlSourceFilter\ParameterCollection.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpArbitraryData.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpArbitraryDataCollection.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpArbitraryDataType.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpBooleanArbitraryData.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpNullArbitraryData.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpNumberArbitraryData.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpObjectArbitraryData.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpProtocol.cs" />
-    <Compile Include="MPUrlSourceFilter\Rtmp\RtmpStringArbitraryData.cs" />
-    <Compile Include="MPUrlSourceFilter\RtmpUrl.cs" />
-    <Compile Include="MPUrlSourceFilter\UserSettings\RtmpUrlSettings.cs" />
-    <Compile Include="MPUrlSourceFilter\RtspUrl.cs" />
-    <Compile Include="MPUrlSourceFilter\UserSettings\RtspUrlSettings.cs" />
-    <Compile Include="MPUrlSourceFilter\SimpleUrl.cs" />
-    <Compile Include="MPUrlSourceFilter\UserSettings\SimpleUrlSettings.cs" />
-    <Compile Include="MPUrlSourceFilter\UdpRtpUrl.cs" />
-    <Compile Include="MPUrlSourceFilter\UserSettings\UdpRtpUrlSettings.cs" />
-    <Compile Include="MPUrlSourceFilter\UrlFactory.cs" />
-    <Compile Include="OnlineVideosException.cs" />
-    <Compile Include="PlaybackOptionsBuilder.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Reflection\FieldPropertyDescriptor.cs" />
-    <Compile Include="Reflection\FieldPropertyDescriptorByRef.cs" />
-    <Compile Include="Reflection\FilterCache.cs" />
-    <Compile Include="Reflection\UserConfigurable.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\Constants.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\DocumentType.cs" />
-    <Compile Include="3rdParty\RssToolkit\Opml\OpmlBody.cs" />
-    <Compile Include="3rdParty\RssToolkit\Opml\OpmlDocument.cs" />
-    <Compile Include="3rdParty\RssToolkit\Opml\OpmlHead.cs" />
-    <Compile Include="3rdParty\RssToolkit\Opml\OpmlOutline.cs" />
-    <Compile Include="3rdParty\RssToolkit\Opml\OutlineInfo.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\DownloadManager.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\Pluralizer.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssAggregationEventArgs.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssAggregator.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssCategory.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssChannel.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssCloud.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssDocument.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssDocumentBase.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssDocumentHttpHandler.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssEnclosure.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssGuid.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssHttpHandlerBase.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssHttpHandlerHelper.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssImage.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssItem.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssSeverityType.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssSkipDays.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssSkipHours.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssSource.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssTextInput.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssXmlHelper.cs" />
-    <Compile Include="3rdParty\RssToolkit\Rss\RssXmlSchemaValidator.cs" />
-    <Compile Include="Helpers\SerializableDictionary.cs" />
-    <Compile Include="Sites\AMF.cs" />
-    <Compile Include="Sites\Base\ContextMenu.cs" />
-    <Compile Include="Sites\BrightCoveUtil.cs" />
-    <Compile Include="Sites\Interfaces\IChoice.cs" />
-    <Compile Include="IFavoritesDatabase.cs" />
-    <Compile Include="Sites\Interfaces\IFilter.cs" />
-    <Compile Include="Sites\Base\LatestVideosSiteUtilBase.cs" />
-    <Compile Include="ITrackingInfo.cs" />
-    <Compile Include="IUserStore.cs" />
-    <Compile Include="IVideoDetails.cs" />
-    <Compile Include="SearchResultItem.cs" />
-    <Compile Include="Sites\DownloadedVideoUtil.cs" />
-    <Compile Include="Sites\FavoriteUtil.cs" />
-    <Compile Include="Sites\GenericSiteUtil.cs" />
-    <Compile Include="Sites\Base\SiteUtilBase.cs" />
-    <Compile Include="Sites\Base\SiteUtilFactory.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sites\Interfaces\IInputStreamSite.cs" />
-    <Compile Include="Sites\Interfaces\IWebViewSiteUtil.cs" />
-    <Compile Include="Sites\Updater.cs" />
-    <Compile Include="Helpers\SubtitleUtils.cs" />
-    <Compile Include="SubtitleHandler.cs" />
-    <Compile Include="SubtitleList.cs" />
-    <Compile Include="Translation.cs" />
-    <Compile Include="VideoInfo.cs" />
-    <Compile Include="WebCache.cs" />
-    <Compile Include="WebService\CompressionWebClient.cs">
+    <Compile Update="WebService\CompressionWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="WebService\OnlineVideosService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="3rdParty\RssToolkit\Resources\Rss20.xsd" />
   </ItemGroup>
   <ItemGroup>
@@ -400,25 +54,23 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\loading.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Resources\Down.png" />
     <Content Include="Resources\Up.png" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\Build\Version.targets" />
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2277.86" />
+    <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
+    <PackageReference Include="SubtitleDownloader" Version="3.1.4">
+      <Aliases>OVSubs</Aliases>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup Label="Compile items now included by globbing that were not in the original project file">
+    <Compile Remove="MPUrlSourceFilter\MPUrlSourceSplitterError.cs" />
+  </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)NuGetPackage\Content\" />
   </Target>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\Packages\Microsoft.Web.WebView2.1.0.2277.86\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\Packages\Microsoft.Web.WebView2.1.0.2277.86\build\Microsoft.Web.WebView2.targets'))" />
-    <Error Condition="!Exists('..\Packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\Packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
-  </Target>
-  <Import Project="..\Packages\Microsoft.Web.WebView2.1.0.2277.86\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\Packages\Microsoft.Web.WebView2.1.0.2277.86\build\Microsoft.Web.WebView2.targets')" />
-  <Import Project="..\Packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\Packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
 </Project>
