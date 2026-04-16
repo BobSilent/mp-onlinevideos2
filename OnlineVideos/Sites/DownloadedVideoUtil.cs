@@ -47,9 +47,10 @@ namespace OnlineVideos.Sites
                 string siteName = Path.GetFileName(aDir);
                 OnlineVideoSettings.Instance.SiteUtilsList.TryGetValue(siteName, out SiteUtilBase util);
 
-                DirectoryInfo dirInfo = new DirectoryInfo(aDir);
-                FileInfo[] files = dirInfo.GetFiles();
-                if (files.Length == 0)
+                // Use EnumerateFiles (lazy) instead of GetFiles (eager FileInfo[]) so we only
+                // load metadata for files we actually examine, and can early-exit the empty check.
+                var fileNames = Directory.EnumerateFiles(aDir);
+                if (!fileNames.Any())
                 {
                     try
                     {
@@ -74,7 +75,7 @@ namespace OnlineVideos.Sites
                             };
                             cachedCategories.Add(cat.Name, cat);
                         }
-                        cat.EstimatedVideoCount = (uint)files.Count(f => IsPossibleVideo(f.Name));
+                        cat.EstimatedVideoCount = (uint)fileNames.Count(f => IsPossibleVideo(Path.GetFileName(f)));
                         Settings.Categories.Add(cat);
                     }
                 }
