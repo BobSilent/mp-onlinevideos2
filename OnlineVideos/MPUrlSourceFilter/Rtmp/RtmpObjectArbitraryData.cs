@@ -27,7 +27,7 @@ namespace OnlineVideos.MPUrlSourceFilter
         /// Initializes a new instance of <see cref="RtmpObjectArbitraryData"/> class.
         /// </overloads>
         public RtmpObjectArbitraryData()
-            : this(RtmpArbitraryData.DefaultName)
+            : this(DefaultName)
         {
         }
 
@@ -65,7 +65,7 @@ namespace OnlineVideos.MPUrlSourceFilter
         /// </returns>
         public override string ToString()
         {
-            if (this.Name != RtmpArbitraryData.DefaultName)
+            if (this.Name != DefaultName)
             {
                 if (String.IsNullOrEmpty(this.Objects.ToString()))
                 {

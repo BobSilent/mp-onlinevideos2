@@ -17,12 +17,12 @@ namespace OnlineVideos.MPUrlSourceFilter
         #region Private fields
 
         private Uri uri;
-        private LogVerbosity verbosity = SimpleUrl.DefaultVerbosity;
+        private LogVerbosity verbosity = DefaultVerbosity;
         private String networkInterface = String.Empty;
         private String cacheFolder = String.Empty;
-        private int maximumLogSize = SimpleUrl.DefaultLogMaximumSize;
-        private int maximumPlugins = SimpleUrl.DefaultMaximumPlugins;
-        private Boolean liveStream = SimpleUrl.DefaultLiveStream;
+        private int maximumLogSize = DefaultLogMaximumSize;
+        private int maximumPlugins = DefaultMaximumPlugins;
+        private Boolean liveStream = DefaultLiveStream;
 
         #endregion
 
@@ -226,57 +226,57 @@ namespace OnlineVideos.MPUrlSourceFilter
             ParameterCollection parameters = new ParameterCollection();
 
             //better use absoluteuri, see https://stackoverflow.com/questions/7624987/whats-the-difference-between-uri-tostring-and-uri-absoluteuri
-            parameters.Add(new Parameter(SimpleUrl.ParameterUrl, this.Uri.AbsoluteUri));
+            parameters.Add(new Parameter(ParameterUrl, this.Uri.AbsoluteUri));
             if (this.Verbosity != DefaultVerbosity)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterLogVerbosity, ((int)this.Verbosity).ToString()));
+                parameters.Add(new Parameter(ParameterLogVerbosity, ((int)this.Verbosity).ToString()));
             }
-            if (this.MaximumLogSize != SimpleUrl.DefaultLogMaximumSize)
+            if (this.MaximumLogSize != DefaultLogMaximumSize)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterLogMaxSize, this.MaximumLogSize.ToString()));
+                parameters.Add(new Parameter(ParameterLogMaxSize, this.MaximumLogSize.ToString()));
             }
             if (this.MaximumPlugins != DefaultMaximumPlugins)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterMaximumPlugins, this.MaximumPlugins.ToString()));
+                parameters.Add(new Parameter(ParameterMaximumPlugins, this.MaximumPlugins.ToString()));
             }
             if (!String.IsNullOrEmpty(this.NetworkInterface))
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterNetworkInterface, this.NetworkInterface));
+                parameters.Add(new Parameter(ParameterNetworkInterface, this.NetworkInterface));
             }
             if (!String.IsNullOrEmpty(this.CacheFolder))
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterCacheFolder, this.CacheFolder));
+                parameters.Add(new Parameter(ParameterCacheFolder, this.CacheFolder));
             }
-            if (this.LiveStream != SimpleUrl.DefaultLiveStream)
+            if (this.LiveStream != DefaultLiveStream)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterLiveStream, this.LiveStream ? SimpleUrl.DefaultTrue : SimpleUrl.DefaultFalse));
+                parameters.Add(new Parameter(ParameterLiveStream, this.LiveStream ? DefaultTrue : DefaultFalse));
             }
-            if (this.DumpProtocolInputData != SimpleUrl.DefaultDumpProtocolInputData)
+            if (this.DumpProtocolInputData != DefaultDumpProtocolInputData)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterDumpProtocolInputData, this.DumpProtocolInputData ? SimpleUrl.DefaultTrue : SimpleUrl.DefaultFalse));
+                parameters.Add(new Parameter(ParameterDumpProtocolInputData, this.DumpProtocolInputData ? DefaultTrue : DefaultFalse));
             }
-            if (this.DumpProtocolOutputData != SimpleUrl.DefaultDumpProtocolOutputData)
+            if (this.DumpProtocolOutputData != DefaultDumpProtocolOutputData)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterDumpProtocolOutputData, this.DumpProtocolOutputData ? SimpleUrl.DefaultTrue : SimpleUrl.DefaultFalse));
+                parameters.Add(new Parameter(ParameterDumpProtocolOutputData, this.DumpProtocolOutputData ? DefaultTrue : DefaultFalse));
             }
-            if (this.DumpParserInputData != SimpleUrl.DefaultDumpParserInputData)
+            if (this.DumpParserInputData != DefaultDumpParserInputData)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterDumpParserInputData, this.DumpParserInputData ? SimpleUrl.DefaultTrue : SimpleUrl.DefaultFalse));
+                parameters.Add(new Parameter(ParameterDumpParserInputData, this.DumpParserInputData ? DefaultTrue : DefaultFalse));
             }
-            if (this.DumpParserOutputData != SimpleUrl.DefaultDumpParserOutputData)
+            if (this.DumpParserOutputData != DefaultDumpParserOutputData)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterDumpParserOutputData, this.DumpParserOutputData ? SimpleUrl.DefaultTrue : SimpleUrl.DefaultFalse));
+                parameters.Add(new Parameter(ParameterDumpParserOutputData, this.DumpParserOutputData ? DefaultTrue : DefaultFalse));
             }
-            if (this.DumpOutputPinData != SimpleUrl.DefaultDumpOutputPinData)
+            if (this.DumpOutputPinData != DefaultDumpOutputPinData)
             {
-                parameters.Add(new Parameter(SimpleUrl.ParameterDumpOutputPinData, this.DumpOutputPinData ? SimpleUrl.DefaultTrue : SimpleUrl.DefaultFalse));
+                parameters.Add(new Parameter(ParameterDumpOutputPinData, this.DumpOutputPinData ? DefaultTrue : DefaultFalse));
             }
 
             // return current URI and formatted connection string
             // MediaPortal Url Source Splitter will ignore first part
             // first part is there, because OnlineVideos cannot work with not valid URIs
 
-            return this.Uri.Scheme + "://" + this.Uri.Host + SimpleUrl.ParameterSeparator + parameters.FilterParameters;
+            return this.Uri.Scheme + "://" + this.Uri.Host + ParameterSeparator + parameters.FilterParameters;
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace OnlineVideos.MPUrlSourceFilter
             using (MemoryStream stream = new MemoryStream())
             {
                 serializer.Serialize(stream, this);
-                return this.Uri.Scheme + "://" + this.Uri.Host + SimpleUrl.ParameterSeparator + Convert.ToBase64String(stream.ToArray());
+                return this.Uri.Scheme + "://" + this.Uri.Host + ParameterSeparator + Convert.ToBase64String(stream.ToArray());
             }
         }
 

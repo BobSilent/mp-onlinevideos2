@@ -114,12 +114,12 @@ namespace OnlineVideos.MPUrlSourceFilter
                 throw new ArgumentNullException("parameterSeparator");
             }
 
-            if (parameterSeparator.Contains(Parameter.ParameterAssign))
+            if (parameterSeparator.Contains(ParameterAssign))
             {
                 throw new ArgumentException("Argument contains invalid characters.", "parameterSeparator");
             }
 
-            return String.Format("{0}{1}{2}", this.Name, Parameter.ParameterAssign, System.Web.HttpUtility.UrlEncode(this.Value).Replace("+", "%20"));
+            return String.Format("{0}{1}{2}", this.Name, ParameterAssign, System.Web.HttpUtility.UrlEncode(this.Value).Replace("+", "%20"));
         }
 
         #endregion

@@ -180,7 +180,7 @@ namespace OnlineVideos.Sites
                     Description = m.Groups["description"].Value,
                     HasSubCategories = regEx_dynamicSubCategories != null
                 };
-                if (!String.IsNullOrEmpty(cat.Thumb) && !Uri.IsWellFormedUriString(cat.Thumb, System.UriKind.Absolute)) cat.Thumb = new Uri(new Uri(baseUrl), cat.Thumb).AbsoluteUri;
+                if (!String.IsNullOrEmpty(cat.Thumb) && !Uri.IsWellFormedUriString(cat.Thumb, UriKind.Absolute)) cat.Thumb = new Uri(new Uri(baseUrl), cat.Thumb).AbsoluteUri;
                 ExtraCategoryMatch(cat, m.Groups);
                 dynamicCategories.Add(cat);
                 m = m.NextMatch();
@@ -196,7 +196,7 @@ namespace OnlineVideos.Sites
                 if (m.Success)
                 {
                     string nextCatPageUrl = m.Groups["url"].Value;
-                    if (!Uri.IsWellFormedUriString(nextCatPageUrl, System.UriKind.Absolute)) nextCatPageUrl = new Uri(new Uri(baseUrl), nextCatPageUrl).AbsoluteUri;
+                    if (!Uri.IsWellFormedUriString(nextCatPageUrl, UriKind.Absolute)) nextCatPageUrl = new Uri(new Uri(baseUrl), nextCatPageUrl).AbsoluteUri;
                     Settings.Categories.Add(new NextPageCategory() { Url = nextCatPageUrl });
                 }
             }
@@ -233,7 +233,7 @@ namespace OnlineVideos.Sites
                             Description = m.Groups["description"].Value,
                             ParentCategory = parentCategory
                         };
-                        if (!String.IsNullOrEmpty(cat.Thumb) && !Uri.IsWellFormedUriString(cat.Thumb, System.UriKind.Absolute)) cat.Thumb = new Uri(new Uri(baseUrl), cat.Thumb).AbsoluteUri;
+                        if (!String.IsNullOrEmpty(cat.Thumb) && !Uri.IsWellFormedUriString(cat.Thumb, UriKind.Absolute)) cat.Thumb = new Uri(new Uri(baseUrl), cat.Thumb).AbsoluteUri;
                         ExtraSubCategoryMatch(cat, m.Groups);
                         dynamicSubCategories.Add(cat);
                         m = m.NextMatch();
@@ -249,7 +249,7 @@ namespace OnlineVideos.Sites
                         if (m.Success)
                         {
                             string nextCatPageUrl = m.Groups["url"].Value;
-                            if (!Uri.IsWellFormedUriString(nextCatPageUrl, System.UriKind.Absolute)) nextCatPageUrl = new Uri(new Uri(baseUrl), nextCatPageUrl).AbsoluteUri;
+                            if (!Uri.IsWellFormedUriString(nextCatPageUrl, UriKind.Absolute)) nextCatPageUrl = new Uri(new Uri(baseUrl), nextCatPageUrl).AbsoluteUri;
                             parentCategory.SubCategories.Add(new NextPageCategory() { Url = nextCatPageUrl, ParentCategory = parentCategory });
                         }
                     }
@@ -298,7 +298,7 @@ namespace OnlineVideos.Sites
                     VideoInfo video = CreateVideoInfo();
                     video.Title = channel.StreamName;
                     // rtmp live stream urls need to set the live flag (if they are not yet in the MPUrlSourceFilter format)
-                    if (channel.Url.ToLower().StartsWith("rtmp") && !channel.Url.Contains(MPUrlSourceFilter.RtmpUrl.ParameterSeparator))
+                    if (channel.Url.ToLower().StartsWith("rtmp") && !channel.Url.Contains(MPUrlSourceFilter.SimpleUrl.ParameterSeparator))
                     {
                         video.VideoUrl = new MPUrlSourceFilter.RtmpUrl(channel.Url) { Live = true }.ToString();
                     }
@@ -586,7 +586,7 @@ namespace OnlineVideos.Sites
                 foreach (string url in results)
                 {
                     string decodedUrl = HttpUtility.HtmlDecode(url);
-                    if (Uri.IsWellFormedUriString(decodedUrl, System.UriKind.Absolute))
+                    if (Uri.IsWellFormedUriString(decodedUrl, UriKind.Absolute))
                     {
                         Uri uri = new Uri(decodedUrl);
                         if (!(uri.Host.Length == uri.AbsoluteUri.Length))
@@ -714,7 +714,7 @@ namespace OnlineVideos.Sites
                 }
                 else
                 {
-                    foreach (RssItem rssItem in RssToolkit.Rss.RssDocument.Load(data).Channel.Items)
+                    foreach (RssItem rssItem in RssDocument.Load(data).Channel.Items)
                     {
                         VideoInfo video = Helpers.RssUtils.VideoInfoFromRssItem(rssItem, regEx_FileUrl != null, new Predicate<string>(IsPossibleVideo));
                         // only if a video url was set, add this Video to the list

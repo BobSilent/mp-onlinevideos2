@@ -14,16 +14,16 @@ namespace OnlineVideos.MPUrlSourceFilter
     {
         #region Private fields
 
-        private int multicastPreference = RtspUrl.DefaultRtspMulticastPreference;
-        private int udpPreference = RtspUrl.DefaultRtspUdpPreference;
-        private int sameConnectionPreference = RtspUrl.DefaultRtspSameConnectionTcpPreference;
+        private int multicastPreference = DefaultRtspMulticastPreference;
+        private int udpPreference = DefaultRtspUdpPreference;
+        private int sameConnectionPreference = DefaultRtspSameConnectionTcpPreference;
 
-        private int openConnectionTimeout = RtspUrl.DefaultRtspOpenConnectionTimeout;
-        private int openConnectionSleepTime = RtspUrl.DefaultRtspOpenConnectionSleepTime;
-        private int totalReopenConnectionTimeout = RtspUrl.DefaultRtspTotalReopenConnectionTimeout;
+        private int openConnectionTimeout = DefaultRtspOpenConnectionTimeout;
+        private int openConnectionSleepTime = DefaultRtspOpenConnectionSleepTime;
+        private int totalReopenConnectionTimeout = DefaultRtspTotalReopenConnectionTimeout;
 
-        private int clientPortMin = RtspUrl.DefaultRtspClientPortMin;
-        private int clientPortMax = RtspUrl.DefaultRtspClientPortMax;
+        private int clientPortMin = DefaultRtspClientPortMin;
+        private int clientPortMax = DefaultRtspClientPortMax;
 
         #endregion
 
@@ -56,7 +56,7 @@ namespace OnlineVideos.MPUrlSourceFilter
                 throw new ArgumentException("The protocol is not supported.", "uri");
             }
 
-            this.IgnorePayloadType = RtspUrl.DefaultRtspIgnoreRtpPayloadType;
+            this.IgnorePayloadType = DefaultRtspIgnoreRtpPayloadType;
         }
 
         #endregion
@@ -262,41 +262,41 @@ namespace OnlineVideos.MPUrlSourceFilter
         {
             ParameterCollection parameters = new ParameterCollection();
 
-            if (this.ClientPortMax != RtspUrl.DefaultRtspClientPortMax)
+            if (this.ClientPortMax != DefaultRtspClientPortMax)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspClientPortMax, this.ClientPortMax.ToString()));
+                parameters.Add(new Parameter(ParameterRtspClientPortMax, this.ClientPortMax.ToString()));
             }
-            if (this.ClientPortMin != RtspUrl.DefaultRtspClientPortMin)
+            if (this.ClientPortMin != DefaultRtspClientPortMin)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspClientPortMin, this.ClientPortMin.ToString()));
+                parameters.Add(new Parameter(ParameterRtspClientPortMin, this.ClientPortMin.ToString()));
             }
-            if (this.OpenConnectionTimeout != RtspUrl.DefaultRtspOpenConnectionTimeout)
+            if (this.OpenConnectionTimeout != DefaultRtspOpenConnectionTimeout)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspOpenConnectionTimeout, this.OpenConnectionTimeout.ToString()));
+                parameters.Add(new Parameter(ParameterRtspOpenConnectionTimeout, this.OpenConnectionTimeout.ToString()));
             }
-            if (this.OpenConnectionSleepTime != RtspUrl.DefaultRtspOpenConnectionSleepTime)
+            if (this.OpenConnectionSleepTime != DefaultRtspOpenConnectionSleepTime)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspOpenConnectionSleepTime, this.OpenConnectionSleepTime.ToString()));
+                parameters.Add(new Parameter(ParameterRtspOpenConnectionSleepTime, this.OpenConnectionSleepTime.ToString()));
             }
-            if (this.TotalReopenConnectionTimeout != RtspUrl.DefaultRtspTotalReopenConnectionTimeout)
+            if (this.TotalReopenConnectionTimeout != DefaultRtspTotalReopenConnectionTimeout)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspTotalReopenConnectionTimeout, this.TotalReopenConnectionTimeout.ToString()));
+                parameters.Add(new Parameter(ParameterRtspTotalReopenConnectionTimeout, this.TotalReopenConnectionTimeout.ToString()));
             }
-            if (this.IgnorePayloadType != RtspUrl.DefaultRtspIgnoreRtpPayloadType)
+            if (this.IgnorePayloadType != DefaultRtspIgnoreRtpPayloadType)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspIgnoreRtpPayloadType, this.IgnorePayloadType.ToString()));
+                parameters.Add(new Parameter(ParameterRtspIgnoreRtpPayloadType, this.IgnorePayloadType.ToString()));
             }
-            if (this.MulticastPreference != RtspUrl.DefaultRtspMulticastPreference)
+            if (this.MulticastPreference != DefaultRtspMulticastPreference)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspMulticastPreference, this.MulticastPreference.ToString()));
+                parameters.Add(new Parameter(ParameterRtspMulticastPreference, this.MulticastPreference.ToString()));
             }
-            if (this.SameConnectionPreference != RtspUrl.DefaultRtspSameConnectionTcpPreference)
+            if (this.SameConnectionPreference != DefaultRtspSameConnectionTcpPreference)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspSameConnectionTcpPreference, this.SameConnectionPreference.ToString()));
+                parameters.Add(new Parameter(ParameterRtspSameConnectionTcpPreference, this.SameConnectionPreference.ToString()));
             }
-            if (this.UdpPreference != RtspUrl.DefaultRtspUdpPreference)
+            if (this.UdpPreference != DefaultRtspUdpPreference)
             {
-                parameters.Add(new Parameter(RtspUrl.ParameterRtspUdpPreference, this.UdpPreference.ToString()));
+                parameters.Add(new Parameter(ParameterRtspUdpPreference, this.UdpPreference.ToString()));
             }
 
             // return formatted connection string

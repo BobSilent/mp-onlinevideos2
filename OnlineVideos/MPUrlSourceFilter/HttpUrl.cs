@@ -16,26 +16,26 @@ namespace OnlineVideos.MPUrlSourceFilter
     {
         #region Private fields
 
-        private String referer = HttpUrl.DefaultHttpReferer;
-        private String userAgent = HttpUrl.DefaultHttpUserAgent;
-        Version version = HttpUrl.DefaultHttpVersion;
+        private String referer = DefaultHttpReferer;
+        private String userAgent = DefaultHttpUserAgent;
+        Version version = DefaultHttpVersion;
         private CookieCollection cookies = new CookieCollection();
-        private bool ignoreContentLength = HttpUrl.DefaultHttpIgnoreContentLength;
-        private int openConnectionTimeout = HttpUrl.DefaultHttpOpenConnectionTimeout;
-        private int openConnectionSleepTime = HttpUrl.DefaultHttpOpenConnectionSleepTime;
-        private int totalReopenConnectionTimeout = HttpUrl.DefaultHttpTotalReopenConnectionTimeout;
+        private bool ignoreContentLength = DefaultHttpIgnoreContentLength;
+        private int openConnectionTimeout = DefaultHttpOpenConnectionTimeout;
+        private int openConnectionSleepTime = DefaultHttpOpenConnectionSleepTime;
+        private int totalReopenConnectionTimeout = DefaultHttpTotalReopenConnectionTimeout;
         private HttpHeaderCollection customHeaders;
 
-        private String serverUserName = HttpUrl.DefaultHttpServerUserName;
-        private String serverPassword = HttpUrl.DefaultHttpServerPassword;
+        private String serverUserName = DefaultHttpServerUserName;
+        private String serverPassword = DefaultHttpServerPassword;
 
-        private String proxyServer = HttpUrl.DefaultHttpProxyServer;
-        private int proxyServerPort = HttpUrl.DefaultHttpProxyServerPort;
-        private String proxyServerUserName = HttpUrl.DefaultHttpProxyServerUserName;
-        private String proxyServerPassword = HttpUrl.DefaultHttpProxyServerPassword;
-        private ProxyServerType proxyServerType = HttpUrl.DefaultHttpProxyServerType;
+        private String proxyServer = DefaultHttpProxyServer;
+        private int proxyServerPort = DefaultHttpProxyServerPort;
+        private String proxyServerUserName = DefaultHttpProxyServerUserName;
+        private String proxyServerPassword = DefaultHttpProxyServerPassword;
+        private ProxyServerType proxyServerType = DefaultHttpProxyServerType;
 
-        private String streamFileName = HttpUrl.DefaultStreamFileName;
+        private String streamFileName = DefaultStreamFileName;
 
         #endregion
 
@@ -396,38 +396,38 @@ namespace OnlineVideos.MPUrlSourceFilter
         {
             ParameterCollection parameters = new ParameterCollection();
 
-            if (this.IgnoreContentLength != HttpUrl.DefaultHttpIgnoreContentLength)
+            if (this.IgnoreContentLength != DefaultHttpIgnoreContentLength)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpIgnoreContentLength, this.IgnoreContentLength ? "1" : "0"));
+                parameters.Add(new Parameter(ParameterHttpIgnoreContentLength, this.IgnoreContentLength ? "1" : "0"));
             }
-            if (this.OpenConnectionTimeout != HttpUrl.DefaultHttpOpenConnectionTimeout)
+            if (this.OpenConnectionTimeout != DefaultHttpOpenConnectionTimeout)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpOpenConnectionTimeout, this.OpenConnectionTimeout.ToString()));
+                parameters.Add(new Parameter(ParameterHttpOpenConnectionTimeout, this.OpenConnectionTimeout.ToString()));
             }
-            if (this.OpenConnectionSleepTime != HttpUrl.DefaultHttpOpenConnectionSleepTime)
+            if (this.OpenConnectionSleepTime != DefaultHttpOpenConnectionSleepTime)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpOpenConnectionSleepTime, this.OpenConnectionSleepTime.ToString()));
+                parameters.Add(new Parameter(ParameterHttpOpenConnectionSleepTime, this.OpenConnectionSleepTime.ToString()));
             }
-            if (this.TotalReopenConnectionTimeout != HttpUrl.DefaultHttpTotalReopenConnectionTimeout)
+            if (this.TotalReopenConnectionTimeout != DefaultHttpTotalReopenConnectionTimeout)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpTotalReopenConnectionTimeout, this.TotalReopenConnectionTimeout.ToString()));
+                parameters.Add(new Parameter(ParameterHttpTotalReopenConnectionTimeout, this.TotalReopenConnectionTimeout.ToString()));
             }
-            if (String.CompareOrdinal(this.Referer, HttpUrl.DefaultHttpReferer) != 0)
+            if (String.CompareOrdinal(this.Referer, DefaultHttpReferer) != 0)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpReferer, this.Referer.ToString()));
+                parameters.Add(new Parameter(ParameterHttpReferer, this.Referer.ToString()));
             }
-            if (String.CompareOrdinal(this.UserAgent, HttpUrl.DefaultHttpUserAgent) != 0)
+            if (String.CompareOrdinal(this.UserAgent, DefaultHttpUserAgent) != 0)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpUserAgent, this.UserAgent.ToString()));
+                parameters.Add(new Parameter(ParameterHttpUserAgent, this.UserAgent.ToString()));
             }
 
             if (this.Version == HttpVersion.Version10)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpVersion, HttpUrl.HttpVersionForce10.ToString()));
+                parameters.Add(new Parameter(ParameterHttpVersion, HttpVersionForce10.ToString()));
             }
             else if (this.Version == HttpVersion.Version11)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpVersion, HttpUrl.HttpVersionForce11.ToString()));
+                parameters.Add(new Parameter(ParameterHttpVersion, HttpVersionForce11.ToString()));
             }
 
             if (this.Cookies.Count > 0)
@@ -437,43 +437,43 @@ namespace OnlineVideos.MPUrlSourceFilter
                 {
                     container.Add(this.Uri, cookie);
                 }
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpCookie, container.GetCookieHeader(this.Uri)));
+                parameters.Add(new Parameter(ParameterHttpCookie, container.GetCookieHeader(this.Uri)));
             }
 
             if (this.CustomHeaders.Count > 0)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpHeadersCount, this.CustomHeaders.Count.ToString()));
+                parameters.Add(new Parameter(ParameterHttpHeadersCount, this.CustomHeaders.Count.ToString()));
 
                 for (int i = 0; i < this.CustomHeaders.Count; i++)
                 {
                     HttpHeader header = this.CustomHeaders[i];
 
-                    parameters.Add(new Parameter(String.Format(HttpUrl.ParameterHttpHeaderFormatName, i), header.Name));
-                    parameters.Add(new Parameter(String.Format(HttpUrl.ParameterHttpHeaderFormatValue, i), header.Value));
+                    parameters.Add(new Parameter(String.Format(ParameterHttpHeaderFormatName, i), header.Name));
+                    parameters.Add(new Parameter(String.Format(ParameterHttpHeaderFormatValue, i), header.Value));
 
                 }
             }
 
             if (this.ServerAuthenticate)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpServerAuthenticate, "1"));
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpServerUserName, this.ServerUserName));
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpServerPassword, this.ServerPassword));
+                parameters.Add(new Parameter(ParameterHttpServerAuthenticate, "1"));
+                parameters.Add(new Parameter(ParameterHttpServerUserName, this.ServerUserName));
+                parameters.Add(new Parameter(ParameterHttpServerPassword, this.ServerPassword));
             }
 
             if (this.ProxyServerAuthenticate)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpProxyServerAuthenticate, "1"));
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpProxyServer, this.ProxyServer));
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpProxyServerPort, this.ProxyServerPort.ToString()));
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpProxyServerUserName, this.ProxyServerUserName));
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpProxyServerPassword, this.ProxyServerPassword));
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpProxyServerType, ((int)this.ProxyServerType).ToString()));
+                parameters.Add(new Parameter(ParameterHttpProxyServerAuthenticate, "1"));
+                parameters.Add(new Parameter(ParameterHttpProxyServer, this.ProxyServer));
+                parameters.Add(new Parameter(ParameterHttpProxyServerPort, this.ProxyServerPort.ToString()));
+                parameters.Add(new Parameter(ParameterHttpProxyServerUserName, this.ProxyServerUserName));
+                parameters.Add(new Parameter(ParameterHttpProxyServerPassword, this.ProxyServerPassword));
+                parameters.Add(new Parameter(ParameterHttpProxyServerType, ((int)this.ProxyServerType).ToString()));
             }
 
-            if (String.CompareOrdinal(this.StreamFileName, HttpUrl.DefaultStreamFileName) != 0)
+            if (String.CompareOrdinal(this.StreamFileName, DefaultStreamFileName) != 0)
             {
-                parameters.Add(new Parameter(HttpUrl.ParameterHttpStreamFileName, this.StreamFileName.ToString()));
+                parameters.Add(new Parameter(ParameterHttpStreamFileName, this.StreamFileName.ToString()));
             }
 
             // return formatted connection string

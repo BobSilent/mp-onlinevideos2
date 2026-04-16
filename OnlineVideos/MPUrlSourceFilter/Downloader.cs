@@ -66,7 +66,7 @@ namespace OnlineVideos.MPUrlSourceFilter
 
             try
             {
-                downloadThread = System.Threading.Thread.CurrentThread;
+                downloadThread = Thread.CurrentThread;
                 this.downloadResult = 0;
                 this.downloadFinished = false;
                 this.cancelled = false;
@@ -90,7 +90,7 @@ namespace OnlineVideos.MPUrlSourceFilter
                     }
 
                     // sleep some time
-                    System.Threading.Thread.Sleep(100);
+                    Thread.Sleep(100);
 
                     if (this.cancelled)
                     {

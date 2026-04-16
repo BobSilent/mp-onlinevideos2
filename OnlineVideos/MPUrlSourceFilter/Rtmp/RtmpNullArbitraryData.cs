@@ -24,7 +24,7 @@ namespace OnlineVideos.MPUrlSourceFilter
         /// Initializes a new instance of <see cref="RtmpNullArbitraryData"/> class.
         /// </overloads>
         public RtmpNullArbitraryData()
-            : this(RtmpArbitraryData.DefaultName)
+            : this(DefaultName)
         {
         }
 
@@ -52,7 +52,7 @@ namespace OnlineVideos.MPUrlSourceFilter
         /// </returns>
         public override string ToString()
         {
-            if (this.Name != RtmpArbitraryData.DefaultName)
+            if (this.Name != DefaultName)
             {
                 return String.Format("conn=NZ:{0}:", this.Name);
             }

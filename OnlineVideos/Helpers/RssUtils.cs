@@ -40,8 +40,8 @@ namespace OnlineVideos.Helpers
                 video.Thumb = rssItem.Enclosure.Url;
             }
 
-            if (!string.IsNullOrEmpty(rssItem.Blip_Runtime)) video.Length = Helpers.TimeUtils.TimeFromSeconds(rssItem.Blip_Runtime);
-            if (string.IsNullOrEmpty(video.Length)) video.Length = Helpers.TimeUtils.TimeFromSeconds(rssItem.iT_Duration);
+            if (!string.IsNullOrEmpty(rssItem.Blip_Runtime)) video.Length = TimeUtils.TimeFromSeconds(rssItem.Blip_Runtime);
+            if (string.IsNullOrEmpty(video.Length)) video.Length = TimeUtils.TimeFromSeconds(rssItem.iT_Duration);
 
             // if we are forced to use the Link of the RssItem, just set the video link
             if (useLink) video.VideoUrl = rssItem.Link;
@@ -72,7 +72,7 @@ namespace OnlineVideos.Helpers
                 foreach (RssItem.MediaContent content in rssItem.MediaContents)
                 {
                     if (!useLink && content.Url != null && isPossibleVideo(content.Url.Trim())) AddToPlaybackOption(video.PlaybackOptions, content);
-                    if (string.IsNullOrEmpty(video.Length)) video.Length = Helpers.TimeUtils.TimeFromSeconds(content.Duration);
+                    if (string.IsNullOrEmpty(video.Length)) video.Length = TimeUtils.TimeFromSeconds(content.Duration);
                 }
             }
             if (rssItem.MediaGroups.Count > 0) // videos might be wrapped in groups, try to get the first MediaContent
@@ -82,7 +82,7 @@ namespace OnlineVideos.Helpers
                     foreach (RssItem.MediaContent content in grp.MediaContents)
                     {
                         if (!useLink && content.Url != null && isPossibleVideo(content.Url.Trim())) AddToPlaybackOption(video.PlaybackOptions, content);
-                        if (string.IsNullOrEmpty(video.Length)) video.Length = Helpers.TimeUtils.TimeFromSeconds(content.Duration);
+                        if (string.IsNullOrEmpty(video.Length)) video.Length = TimeUtils.TimeFromSeconds(content.Duration);
                     }
                 }
             }

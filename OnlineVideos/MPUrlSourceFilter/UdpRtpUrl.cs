@@ -14,10 +14,10 @@ namespace OnlineVideos.MPUrlSourceFilter
     {
         #region Private fields
 
-        private int receiveDataCheckInterval = UdpRtpUrl.DefaultUdpReceiveDataCheckInterval;
-        private int openConnectionTimeout = UdpRtpUrl.DefaultUdpOpenConnectionTimeout;
-        private int openConnectionSleepTime = UdpRtpUrl.DefaultUdpOpenConnectionSleepTime;
-        private int totalReopenConnectionTimeout = UdpRtpUrl.DefaultUdpTotalReopenConnectionTimeout;
+        private int receiveDataCheckInterval = DefaultUdpReceiveDataCheckInterval;
+        private int openConnectionTimeout = DefaultUdpOpenConnectionTimeout;
+        private int openConnectionSleepTime = DefaultUdpOpenConnectionSleepTime;
+        private int totalReopenConnectionTimeout = DefaultUdpTotalReopenConnectionTimeout;
 
         #endregion
 
@@ -149,21 +149,21 @@ namespace OnlineVideos.MPUrlSourceFilter
         {
             ParameterCollection parameters = new ParameterCollection();
 
-            if (this.ReceiveDataCheckInterval != UdpRtpUrl.DefaultUdpReceiveDataCheckInterval)
+            if (this.ReceiveDataCheckInterval != DefaultUdpReceiveDataCheckInterval)
             {
-                parameters.Add(new Parameter(UdpRtpUrl.ParameterUdpReceiveDataCheckInterval, this.ReceiveDataCheckInterval.ToString()));
+                parameters.Add(new Parameter(ParameterUdpReceiveDataCheckInterval, this.ReceiveDataCheckInterval.ToString()));
             }
-            if (this.OpenConnectionTimeout != UdpRtpUrl.DefaultUdpOpenConnectionTimeout)
+            if (this.OpenConnectionTimeout != DefaultUdpOpenConnectionTimeout)
             {
-                parameters.Add(new Parameter(UdpRtpUrl.ParameterUdpOpenConnectionTimeout, this.OpenConnectionTimeout.ToString()));
+                parameters.Add(new Parameter(ParameterUdpOpenConnectionTimeout, this.OpenConnectionTimeout.ToString()));
             }
-            if (this.OpenConnectionSleepTime != UdpRtpUrl.DefaultUdpOpenConnectionSleepTime)
+            if (this.OpenConnectionSleepTime != DefaultUdpOpenConnectionSleepTime)
             {
-                parameters.Add(new Parameter(UdpRtpUrl.ParameterUdpOpenConnectionSleepTime, this.OpenConnectionSleepTime.ToString()));
+                parameters.Add(new Parameter(ParameterUdpOpenConnectionSleepTime, this.OpenConnectionSleepTime.ToString()));
             }
-            if (this.TotalReopenConnectionTimeout != UdpRtpUrl.DefaultUdpTotalReopenConnectionTimeout)
+            if (this.TotalReopenConnectionTimeout != DefaultUdpTotalReopenConnectionTimeout)
             {
-                parameters.Add(new Parameter(UdpRtpUrl.ParameterUdpTotalReopenConnectionTimeout, this.TotalReopenConnectionTimeout.ToString()));
+                parameters.Add(new Parameter(ParameterUdpTotalReopenConnectionTimeout, this.TotalReopenConnectionTimeout.ToString()));
             }
 
             // return formatted connection string

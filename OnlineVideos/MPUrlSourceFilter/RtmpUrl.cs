@@ -15,9 +15,9 @@ namespace OnlineVideos.MPUrlSourceFilter
 	{
         #region Private fields
 
-        private int openConnectionTimeout = RtmpUrl.DefaultRtmpOpenConnectionTimeout;
-        private int openConnectionSleepTime = RtmpUrl.DefaultRtmpOpenConnectionSleepTime;
-        private int totalReopenConnectionTimeout = RtmpUrl.DefaultRtmpTotalReopenConnectionTimeout;
+        private int openConnectionTimeout = DefaultRtmpOpenConnectionTimeout;
+        private int openConnectionSleepTime = DefaultRtmpOpenConnectionSleepTime;
+        private int totalReopenConnectionTimeout = DefaultRtmpTotalReopenConnectionTimeout;
         private RtmpArbitraryDataCollection arbitraryData;
 
         #endregion
@@ -57,22 +57,22 @@ namespace OnlineVideos.MPUrlSourceFilter
                 throw new ArgumentException("The protocol is not supported.", "uri");
             }
 
-            this.App = RtmpUrl.DefaultApp;
-            this.TcUrl = RtmpUrl.DefaultTcUrl;
-            this.PageUrl = RtmpUrl.DefaultPageUrl;
-            this.SwfUrl = RtmpUrl.DefaultSwfUrl;
-            this.FlashVersion = RtmpUrl.DefaultFlashVersion;
-            this.PlayPath = RtmpUrl.DefaultPlayPath;
-            this.Playlist = RtmpUrl.DefaultPlaylist;
-            this.Live = RtmpUrl.DefaultLive;
-            this.Subscribe = RtmpUrl.DefaultSubscribe;
-            this.Start = RtmpUrl.DefaultStart;
-            this.Stop = RtmpUrl.DefaultStop;
-            this.BufferTime = RtmpUrl.DefaultBufferTime;
-            this.Token = RtmpUrl.DefaultToken;
-            this.Jtv = RtmpUrl.DefaultJtv;
-            this.SwfVerify = RtmpUrl.DefaultSwfVerify;
-            this.SwfAge = RtmpUrl.DefaultSwfAge;
+            this.App = DefaultApp;
+            this.TcUrl = DefaultTcUrl;
+            this.PageUrl = DefaultPageUrl;
+            this.SwfUrl = DefaultSwfUrl;
+            this.FlashVersion = DefaultFlashVersion;
+            this.PlayPath = DefaultPlayPath;
+            this.Playlist = DefaultPlaylist;
+            this.Live = DefaultLive;
+            this.Subscribe = DefaultSubscribe;
+            this.Start = DefaultStart;
+            this.Stop = DefaultStop;
+            this.BufferTime = DefaultBufferTime;
+            this.Token = DefaultToken;
+            this.Jtv = DefaultJtv;
+            this.SwfVerify = DefaultSwfVerify;
+            this.SwfAge = DefaultSwfAge;
             this.arbitraryData = new RtmpArbitraryDataCollection();
 		}
 
@@ -384,109 +384,109 @@ namespace OnlineVideos.MPUrlSourceFilter
         {
             ParameterCollection parameters = new ParameterCollection();
 
-            if (this.App != RtmpUrl.DefaultApp)
+            if (this.App != DefaultApp)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterApp, this.App));
+                parameters.Add(new Parameter(ParameterApp, this.App));
             }
 
-            if (this.BufferTime != RtmpUrl.DefaultBufferTime)
+            if (this.BufferTime != DefaultBufferTime)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterBufferTime, this.BufferTime.ToString()));
+                parameters.Add(new Parameter(ParameterBufferTime, this.BufferTime.ToString()));
             }
 
-            if (this.FlashVersion != RtmpUrl.DefaultFlashVersion)
+            if (this.FlashVersion != DefaultFlashVersion)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterFlashVer, this.FlashVersion));
+                parameters.Add(new Parameter(ParameterFlashVer, this.FlashVersion));
             }
 
-            if (this.Auth != RtmpUrl.DefaultAuth)
+            if (this.Auth != DefaultAuth)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterAuth, this.Auth));
+                parameters.Add(new Parameter(ParameterAuth, this.Auth));
             }
 
             if (this.ArbitraryData.Count != 0)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterArbitraryData, this.ArbitraryData.ToString()));
+                parameters.Add(new Parameter(ParameterArbitraryData, this.ArbitraryData.ToString()));
             }
 
-            if (this.Jtv != RtmpUrl.DefaultJtv)
+            if (this.Jtv != DefaultJtv)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterJtv, this.Jtv));
+                parameters.Add(new Parameter(ParameterJtv, this.Jtv));
             }
 
-            if (this.Live != RtmpUrl.DefaultLive)
+            if (this.Live != DefaultLive)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterLive, this.Live ? "1" : "0"));
+                parameters.Add(new Parameter(ParameterLive, this.Live ? "1" : "0"));
             }
 
-            if (this.OpenConnectionTimeout != RtmpUrl.DefaultRtmpOpenConnectionTimeout)
+            if (this.OpenConnectionTimeout != DefaultRtmpOpenConnectionTimeout)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterRtmpOpenConnectionTimeout, this.OpenConnectionTimeout.ToString()));
+                parameters.Add(new Parameter(ParameterRtmpOpenConnectionTimeout, this.OpenConnectionTimeout.ToString()));
             }
 
-            if (this.OpenConnectionSleepTime != RtmpUrl.DefaultRtmpOpenConnectionSleepTime)
+            if (this.OpenConnectionSleepTime != DefaultRtmpOpenConnectionSleepTime)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterRtmpOpenConnectionSleepTime, this.OpenConnectionSleepTime.ToString()));
+                parameters.Add(new Parameter(ParameterRtmpOpenConnectionSleepTime, this.OpenConnectionSleepTime.ToString()));
             }
 
-            if (this.TotalReopenConnectionTimeout != RtmpUrl.DefaultRtmpTotalReopenConnectionTimeout)
+            if (this.TotalReopenConnectionTimeout != DefaultRtmpTotalReopenConnectionTimeout)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterRtmpTotalReopenConnectionTimeout, this.TotalReopenConnectionTimeout.ToString()));
+                parameters.Add(new Parameter(ParameterRtmpTotalReopenConnectionTimeout, this.TotalReopenConnectionTimeout.ToString()));
             }
 
-            if (this.PageUrl != RtmpUrl.DefaultPageUrl)
+            if (this.PageUrl != DefaultPageUrl)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterPageUrl, this.PageUrl));
+                parameters.Add(new Parameter(ParameterPageUrl, this.PageUrl));
             }
 
-            if (this.Playlist != RtmpUrl.DefaultPlaylist)
+            if (this.Playlist != DefaultPlaylist)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterPlaylist, this.Playlist ? "1" : "0"));
+                parameters.Add(new Parameter(ParameterPlaylist, this.Playlist ? "1" : "0"));
             }
 
-            if (this.PlayPath != RtmpUrl.DefaultPlayPath)
+            if (this.PlayPath != DefaultPlayPath)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterPlayPath, this.PlayPath));
+                parameters.Add(new Parameter(ParameterPlayPath, this.PlayPath));
             }
 
-            if (this.Start != RtmpUrl.DefaultStart)
+            if (this.Start != DefaultStart)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterStart, this.Start.ToString()));
+                parameters.Add(new Parameter(ParameterStart, this.Start.ToString()));
             }
 
-            if (this.Stop != RtmpUrl.DefaultStop)
+            if (this.Stop != DefaultStop)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterStop, this.Stop.ToString()));
+                parameters.Add(new Parameter(ParameterStop, this.Stop.ToString()));
             }
 
-            if (this.Subscribe != RtmpUrl.DefaultSubscribe)
+            if (this.Subscribe != DefaultSubscribe)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterSubscribe, this.Subscribe));
+                parameters.Add(new Parameter(ParameterSubscribe, this.Subscribe));
             }
 
-            if (this.SwfAge != RtmpUrl.DefaultSwfAge)
+            if (this.SwfAge != DefaultSwfAge)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterSwfAge, this.SwfAge.ToString()));
+                parameters.Add(new Parameter(ParameterSwfAge, this.SwfAge.ToString()));
             }
 
-            if (this.SwfUrl != RtmpUrl.DefaultSwfUrl)
+            if (this.SwfUrl != DefaultSwfUrl)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterSwfUrl, this.SwfUrl));
+                parameters.Add(new Parameter(ParameterSwfUrl, this.SwfUrl));
             }
 
-            if (this.SwfVerify != RtmpUrl.DefaultSwfVerify)
+            if (this.SwfVerify != DefaultSwfVerify)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterSwfVerify, this.SwfVerify ? "1" : "0"));
+                parameters.Add(new Parameter(ParameterSwfVerify, this.SwfVerify ? "1" : "0"));
             }
 
-            if (this.TcUrl != RtmpUrl.DefaultTcUrl)
+            if (this.TcUrl != DefaultTcUrl)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterTcUrl, this.TcUrl));
+                parameters.Add(new Parameter(ParameterTcUrl, this.TcUrl));
             }
 
-            if (this.Token != RtmpUrl.DefaultToken)
+            if (this.Token != DefaultToken)
             {
-                parameters.Add(new Parameter(RtmpUrl.ParameterToken, this.Token));
+                parameters.Add(new Parameter(ParameterToken, this.Token));
             }
 
             // return formatted connection string

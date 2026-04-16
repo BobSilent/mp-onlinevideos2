@@ -30,7 +30,7 @@ namespace OnlineVideos.MPUrlSourceFilter
         /// <para>The <see cref="value"/> is <see langword="null"/>.</para>
         /// </exception>
         public RtmpStringArbitraryData(String value)
-            : this(RtmpArbitraryData.DefaultName, value)
+            : this(DefaultName, value)
         {
         }
 
@@ -95,7 +95,7 @@ namespace OnlineVideos.MPUrlSourceFilter
         /// </returns>
         public override string ToString()
         {
-            if (this.Name != RtmpArbitraryData.DefaultName)
+            if (this.Name != DefaultName)
             {
                 return String.Format("conn=NS:{0}:{1}", this.Name, this.EncodeValue());
             }

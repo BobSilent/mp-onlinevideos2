@@ -15,22 +15,22 @@ namespace OnlineVideos.MPUrlSourceFilter
 
         static UrlFactory()
         {
-            UrlFactory.SupportedProtocols = new Hashtable();
+            SupportedProtocols = new Hashtable();
 
-            UrlFactory.SupportedProtocols.Add("HTTP", "HTTP");
-            UrlFactory.SupportedProtocols.Add("HTTPS", "HTTP");
+            SupportedProtocols.Add("HTTP", "HTTP");
+            SupportedProtocols.Add("HTTPS", "HTTP");
 
-            UrlFactory.SupportedProtocols.Add("RTMP", "RTMP");
-            UrlFactory.SupportedProtocols.Add("RTMPT", "RTMP");
-            UrlFactory.SupportedProtocols.Add("RTMPE", "RTMP");
-            UrlFactory.SupportedProtocols.Add("RTMPTE", "RTMP");
-            UrlFactory.SupportedProtocols.Add("RTMPS", "RTMP");
-            UrlFactory.SupportedProtocols.Add("RTMPTS", "RTMP");
+            SupportedProtocols.Add("RTMP", "RTMP");
+            SupportedProtocols.Add("RTMPT", "RTMP");
+            SupportedProtocols.Add("RTMPE", "RTMP");
+            SupportedProtocols.Add("RTMPTE", "RTMP");
+            SupportedProtocols.Add("RTMPS", "RTMP");
+            SupportedProtocols.Add("RTMPTS", "RTMP");
 
-            UrlFactory.SupportedProtocols.Add("RTSP", "RTSP");
+            SupportedProtocols.Add("RTSP", "RTSP");
 
-            UrlFactory.SupportedProtocols.Add("UDP", "UDP");
-            UrlFactory.SupportedProtocols.Add("RTP", "UDP");
+            SupportedProtocols.Add("UDP", "UDP");
+            SupportedProtocols.Add("RTP", "UDP");
         }
 
         #endregion
@@ -46,7 +46,7 @@ namespace OnlineVideos.MPUrlSourceFilter
             // in this case check URI scheme
 
             Uri uri = new Uri(url);
-            String scheme = (String)UrlFactory.SupportedProtocols[uri.Scheme.ToUpperInvariant()];
+            String scheme = (String)SupportedProtocols[uri.Scheme.ToUpperInvariant()];
 
             switch (scheme)
             {

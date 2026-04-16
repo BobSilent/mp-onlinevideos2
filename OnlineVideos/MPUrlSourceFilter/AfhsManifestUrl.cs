@@ -41,7 +41,7 @@ namespace OnlineVideos.MPUrlSourceFilter
         public AfhsManifestUrl(Uri uri)
             : base(uri)
         {
-            this.SegmentFragmentUrlExtraParameters = AfhsManifestUrl.DefaultSegmentFragmentUrlExtraParameters;
+            this.SegmentFragmentUrlExtraParameters = DefaultSegmentFragmentUrlExtraParameters;
         }
 
         #endregion
@@ -79,9 +79,9 @@ namespace OnlineVideos.MPUrlSourceFilter
         {
             ParameterCollection parameters = new ParameterCollection();
 
-            if (this.SegmentFragmentUrlExtraParameters != AfhsManifestUrl.DefaultSegmentFragmentUrlExtraParameters)
+            if (this.SegmentFragmentUrlExtraParameters != DefaultSegmentFragmentUrlExtraParameters)
             {
-                parameters.Add(new Parameter(AfhsManifestUrl.ParameterSegmentFragmentUrlExtraParameters, this.SegmentFragmentUrlExtraParameters));
+                parameters.Add(new Parameter(ParameterSegmentFragmentUrlExtraParameters, this.SegmentFragmentUrlExtraParameters));
             }
 
             // return formatted connection string

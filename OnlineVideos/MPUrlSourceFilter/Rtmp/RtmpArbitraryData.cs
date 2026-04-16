@@ -24,7 +24,7 @@ namespace OnlineVideos.MPUrlSourceFilter
         /// Initializes a new instance of <see cref="RtmpArbitraryData"/> class.
         /// </overloads>
         public RtmpArbitraryData(RtmpArbitraryDataType dataType)
-            : this(dataType, RtmpArbitraryData.DefaultName)
+            : this(dataType, DefaultName)
         {
         }
 

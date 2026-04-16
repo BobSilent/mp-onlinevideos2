@@ -78,7 +78,7 @@ namespace OnlineVideos.MPUrlSourceFilter
 
             foreach (var arbitraryData in this)
             {
-                builder.AppendFormat((builder.Length == 0) ? "{0}" : "{1}{0}", arbitraryData.ToString(), RtmpArbitraryDataCollection.ArbitraryDataSeparator);
+                builder.AppendFormat((builder.Length == 0) ? "{0}" : "{1}{0}", arbitraryData.ToString(), ArbitraryDataSeparator);
             }
 
             return builder.ToString();

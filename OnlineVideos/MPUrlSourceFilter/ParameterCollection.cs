@@ -39,7 +39,7 @@ namespace OnlineVideos.MPUrlSourceFilter
 
                 foreach (var parameter in this)
                 {
-                    builder.AppendFormat((builder.Length == 0) ? "{0}" : "{1}{0}", parameter.FormatParameter(ParameterCollection.ParameterSeparator), ParameterCollection.ParameterSeparator);
+                    builder.AppendFormat((builder.Length == 0) ? "{0}" : "{1}{0}", parameter.FormatParameter(ParameterSeparator), ParameterSeparator);
                 }
 
                 return builder.ToString();

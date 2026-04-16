@@ -149,7 +149,7 @@ namespace OnlineVideos.Downloading
                 using (var response = _thumbClient.GetAsync(url).GetAwaiter().GetResult())
                 using (var responseStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
                 {
-                    System.Drawing.Image image = System.Drawing.Image.FromStream(responseStream, true, true);
+                    System.Drawing.Image image = Image.FromStream(responseStream, true, true);
                     // resample if needed
                     float imageAspectRatio = image.Width / (float)image.Height;
                     if (image.Width > OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize || image.Height > OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize
