@@ -139,15 +139,21 @@ namespace OnlineVideos.Sites
                                                     title_xml = simpleNode.Element("String").Value;
                                                 }
                                                 else if (simpleNode.Element("Name").Value == "DESCRIPTION")
+                                                {
                                                     description_xml = simpleNode.Element("String").Value;
+                                                }
                                                 else if (simpleNode.Element("Name").Value == "DATE_RELEASED")
                                                 {
                                                     airdate_xml = simpleNode.Element("String").Value;
                                                     if (UInt32.TryParse(airdate_xml, out UInt32 year))
+                                                    {
                                                         ti.Year = year;
+                                                    }
                                                 }
                                                 else if (simpleNode.Element("Name").Value == "PART_NUMBER")
+                                                {
                                                     ti.Episode = Convert.ToUInt32(simpleNode.Element("String").Value);
+                                                }
                                                 else if (simpleNode.Element("Name").Value == "CONTENT_TYPE")
                                                 {
                                                     if (Enum.TryParse(simpleNode.Element("String").Value, out VideoKind kind))
@@ -172,7 +178,7 @@ namespace OnlineVideos.Sites
                         VideoInfo loVideoInfo = new VideoInfo
                         {
                             VideoUrl = file.FullName,
-                            Thumb = file.FullName.Substring(0, file.FullName.LastIndexOf(".")) + ".jpg",
+                            Thumb = Path.ChangeExtension(file.FullName, ".jpg"),
                             Title = string.IsNullOrEmpty(title_xml) ? file.Name : title_xml,
                             Length = string.Format("{0} MB", (file.Length / 1024 / 1024).ToString("N0")),
                             Airdate = string.IsNullOrEmpty(airdate_xml) ? file.LastWriteTime.ToString("g", OnlineVideoSettings.Instance.Locale) : airdate_xml,
@@ -268,14 +274,16 @@ namespace OnlineVideos.Sites
             }
             else if (choice.DisplayText == Translation.Instance.DeleteAll)
             {
-                FileInfo[] files = new DirectoryInfo((selectedCategory as RssLink).Url).GetFiles("*", selectedCategory.Name == Translation.Instance.All ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-                foreach (FileInfo file in files)
+                var searchOption = selectedCategory.Name == Translation.Instance.All
+                    ? SearchOption.AllDirectories
+                    : SearchOption.TopDirectoryOnly;
+                foreach (string filePath in Directory.EnumerateFiles((selectedCategory as RssLink).Url, "*", searchOption))
                 {
-                    if (IsPossibleVideo(file.Name))
+                    if (IsPossibleVideo(filePath))
                     {
                         try
                         {
-                            DeleteVideo(file.FullName);
+                            DeleteVideo(filePath);
                         }
                         catch { } // file might be locked (e.g. still downloading)
                     }
@@ -321,9 +329,17 @@ namespace OnlineVideos.Sites
 
         public override bool IsPossibleVideo(string fsUrl)
         {
-            if (string.IsNullOrEmpty(fsUrl)) return false; // empty string is not a video
+            if (string.IsNullOrEmpty(fsUrl))
+            {
+                return false; // empty string is not a video
+            }
+
             string extension = Path.GetExtension(fsUrl);
-            if (string.IsNullOrEmpty(extension)) return false; // can't be a video file if empty extension
+            if (string.IsNullOrEmpty(extension))
+            {
+                return false; // can't be a video file if empty extension
+            }
+
             return OnlineVideoSettings.Instance.VideoExtensions.ContainsKey(extension);
         }
 
@@ -385,14 +401,20 @@ namespace OnlineVideos.Sites
 
         private bool PassesAgeCheck(string fullFileName)
         {
-            if (!OnlineVideoSettings.Instance.UseAgeConfirmation) return true;
-            if (OnlineVideoSettings.Instance.UseAgeConfirmation && OnlineVideoSettings.Instance.AgeConfirmed) return true;
+            if (!OnlineVideoSettings.Instance.UseAgeConfirmation)
+            {
+                return true;
+            }
+
+            if (OnlineVideoSettings.Instance.UseAgeConfirmation && OnlineVideoSettings.Instance.AgeConfirmed)
+            {
+                return true;
+            }
 
             try
             {
                 // try to find out what site this video belongs to
-                string siteName = Path.GetDirectoryName(fullFileName);
-                siteName = siteName.Substring(siteName.LastIndexOf('\\') + 1);
+                string siteName = Path.GetFileName(Path.GetDirectoryName(fullFileName));
                 if (OnlineVideoSettings.Instance.SiteUtilsList.TryGetValue(siteName, out SiteUtilBase util))
                 {
                     return !util.Settings.ConfirmAge;
@@ -405,8 +427,16 @@ namespace OnlineVideos.Sites
         private string FixQuery(string query)
         {
             query = query.Replace(' ', '*');
-            if (!query.StartsWith("*")) query = "*" + query;
-            if (!query.EndsWith("*")) query += "*";
+            if (!query.StartsWith("*", StringComparison.Ordinal))
+            {
+                query = "*" + query;
+            }
+
+            if (!query.EndsWith("*", StringComparison.Ordinal))
+            {
+                query += "*";
+            }
+
             return query;
         }
     }
