@@ -187,22 +187,13 @@ namespace OnlineVideos.Sites
                 switch (lastSort)
                 {
                     case "name":
-                        loVideoInfoList.Sort((Comparison<VideoInfo>)delegate (VideoInfo v1, VideoInfo v2)
-                        {
-                            return v1.Title.CompareTo(v2.Title);
-                        });
+                        loVideoInfoList.Sort((v1, v2) => v1.Title.CompareTo(v2.Title));
                         break;
                     case "date":
-                        loVideoInfoList.Sort((Comparison<VideoInfo>)delegate (VideoInfo v1, VideoInfo v2)
-                        {
-                            return (v2.Other as FileInfo).LastWriteTime.CompareTo((v1.Other as FileInfo).LastWriteTime);
-                        });
+                        loVideoInfoList.Sort((v1, v2) => (v2.Other as FileInfo).LastWriteTime.CompareTo((v1.Other as FileInfo).LastWriteTime));
                         break;
                     case "size":
-                        loVideoInfoList.Sort((Comparison<VideoInfo>)delegate (VideoInfo v1, VideoInfo v2)
-                        {
-                            return (v2.Other as FileInfo).Length.CompareTo((v1.Other as FileInfo).Length);
-                        });
+                        loVideoInfoList.Sort((v1, v2) => (v2.Other as FileInfo).Length.CompareTo((v1.Other as FileInfo).Length));
                         break;
                 }
             }
