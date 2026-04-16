@@ -28,3 +28,8 @@ Converted SiteParser to SDK-style. Fixed MSB3823 non-string resources with Gener
 
 Converted OnlineVideos.Sites.doskabouter to SDK-style. Clean conversion. 0 errors, 5 pre-existing CS8632 nullable warnings (not introduced by conversion).
 
+
+## [2026-04-16 15:13] 07-sites-offbyone
+
+Converted OnlineVideos.Sites.offbyone to SDK-style. Removed Microsoft.Net.Compilers (old Roslyn incompatible with SDK Csc task), replaced legacy HintPath/BCL package refs with in-box net48 equivalents, fixed 3x TaskEx.Delay → Task.Delay in YouTubeV3Util.cs. packages.config removed. Full solution builds with 0 errors, 0 warnings.
+
