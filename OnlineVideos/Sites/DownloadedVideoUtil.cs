@@ -9,10 +9,10 @@ namespace OnlineVideos.Sites
 {
     public class DownloadedVideoUtil : SiteUtilBase, IFilter
     {
-        string lastSort = "date";
+        private string lastSort = "date";
 
         // keep a reference of all Categories ever created and reuse them, to get them selected when returning to the category view
-        readonly Dictionary<string, RssLink> cachedCategories = new Dictionary<string, RssLink>();
+        private readonly Dictionary<string, RssLink> cachedCategories = new Dictionary<string, RssLink>();
 
         public override int DiscoverDynamicCategories()
         {
@@ -51,7 +51,10 @@ namespace OnlineVideos.Sites
                 FileInfo[] files = dirInfo.GetFiles();
                 if (files.Length == 0)
                 {
-                    try { Directory.Delete(aDir); }
+                    try
+                    {
+                        Directory.Delete(aDir);
+                    }
                     catch { } // try to delete empty directories
                 }
                 else
@@ -146,7 +149,7 @@ namespace OnlineVideos.Sites
                                                     ti.Episode = Convert.ToUInt32(simpleNode.Element("String").Value);
                                                 else if (simpleNode.Element("Name").Value == "CONTENT_TYPE")
                                                 {
-                                                    if (VideoKind.TryParse(simpleNode.Element("String").Value, out VideoKind kind))
+                                                    if (Enum.TryParse(simpleNode.Element("String").Value, out VideoKind kind))
                                                     {
                                                         ti.VideoKind = kind;
                                                     }
@@ -162,7 +165,9 @@ namespace OnlineVideos.Sites
                             }
                         }
                         if (ti.VideoKind == VideoKind.Movie)
+                        {
                             ti.Title = title_xml;
+                        }
                         VideoInfo loVideoInfo = new VideoInfo
                         {
                             VideoUrl = file.FullName,
@@ -291,9 +296,12 @@ namespace OnlineVideos.Sites
             return new ContextMenuExecutionResult() { RefreshCurrentItems = true };
         }
 
-        void DeleteVideo(string path)
+        private void DeleteVideo(string path)
         {
-            if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
 
             //Get all files starting with given path
             string[] files = Directory.GetFiles(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".*", SearchOption.TopDirectoryOnly);
@@ -305,7 +313,9 @@ namespace OnlineVideos.Sites
             foreach (string strFile in files)
             {
                 if (filesVideo.Any(f => strFile.StartsWith(f, StringComparison.CurrentCultureIgnoreCase)))
+                {
                     continue; //the file belongs to another video; skip this file
+                }
 
                 File.Delete(strFile);
             }
@@ -316,7 +326,6 @@ namespace OnlineVideos.Sites
             if (string.IsNullOrEmpty(fsUrl)) return false; // empty string is not a video
             string extension = Path.GetExtension(fsUrl);
             if (string.IsNullOrEmpty(extension)) return false; // can't be a video file if empty extension
-            extension = extension.ToLower();
             return OnlineVideoSettings.Instance.VideoExtensions.ContainsKey(extension);
         }
 
@@ -376,7 +385,7 @@ namespace OnlineVideos.Sites
 
         #endregion
 
-        bool PassesAgeCheck(string fullFileName)
+        private bool PassesAgeCheck(string fullFileName)
         {
             if (!OnlineVideoSettings.Instance.UseAgeConfirmation) return true;
             if (OnlineVideoSettings.Instance.UseAgeConfirmation && OnlineVideoSettings.Instance.AgeConfirmed) return true;
@@ -395,7 +404,7 @@ namespace OnlineVideos.Sites
             return false;
         }
 
-        string FixQuery(string query)
+        private string FixQuery(string query)
         {
             query = query.Replace(' ', '*');
             if (!query.StartsWith("*")) query = "*" + query;

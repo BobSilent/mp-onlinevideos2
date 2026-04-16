@@ -94,7 +94,7 @@ namespace OnlineVideos
             SiteSettingsList = new BindingList<SiteSettings>();
             SiteUtilsList = new Dictionary<string, SiteUtilBase>();
             LatestVideosSiteUtilsList = new List<LatestVideosSiteUtilBase>();
-            VideoExtensions = new SortedList<string, bool>();
+            VideoExtensions = new SortedList<string, bool>(StringComparer.OrdinalIgnoreCase);
             ThumbsResizeOptions = ImageDownloader.ResizeOptions.Default;
         }
 
@@ -277,7 +277,11 @@ namespace OnlineVideos
         {
             foreach (string anExt in extensions)
             {
-                if (!VideoExtensions.ContainsKey(anExt.ToLower().Trim())) VideoExtensions.Add(anExt.ToLower().Trim(), true);
+                string ext = anExt.Trim();
+                if (!string.IsNullOrEmpty(ext) && !VideoExtensions.ContainsKey(ext))
+                {
+                    VideoExtensions.Add(ext, true);
+                }
             }
         }
 
