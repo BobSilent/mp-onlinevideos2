@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 
 namespace OnlineVideos.Downloading
@@ -33,6 +35,22 @@ namespace OnlineVideos.Downloading
         }
 
         public static bool StopDownload { get; set; }
+
+        // Shared client for thumbnail downloads — reuses TCP connections across parallel download groups.
+        private static readonly HttpClient _thumbClient = new HttpClient(
+            new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                AllowAutoRedirect = true
+            })
+        {
+            DefaultRequestHeaders =
+            {
+                UserAgent = { ProductInfoHeaderValue.Parse(OnlineVideoSettings.Instance.UserAgent) },
+                Accept = { new MediaTypeWithQualityHeaderValue("*/*") }
+            },
+            Timeout = TimeSpan.FromSeconds(5)
+        };
 
         /// <summary>
         /// Downloads images from the <see cref="SearchResultItem.Thumb"/> in a background thread 
@@ -72,26 +90,40 @@ namespace OnlineVideos.Downloading
         {
             foreach (T item in items)
             {
-                if (StopDownload) break;
+                if (StopDownload)
+                {
+                    break;
+                }
 
-                if (string.IsNullOrEmpty(item.Thumb)) continue;
+                if (string.IsNullOrEmpty(item.Thumb))
+                {
+                    continue;
+                }
 
                 foreach (string url in item.Thumb.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     string imageLocation = string.Empty;
 
-                    Uri temp;
-                    if (Uri.TryCreate(url, UriKind.Absolute, out temp))
+                    if (Uri.TryCreate(url, UriKind.Absolute, out Uri temp))
                     {
                         if (temp.IsFile)
                         {
-                            if (File.Exists(url)) imageLocation = url;
+                            if (File.Exists(url))
+                            {
+                                imageLocation = url;
+                            }
                         }
                         else
                         {
                             string thumbFile = string.IsNullOrEmpty(item.ThumbnailImage) ? Helpers.FileUtils.GetThumbFile(url) : item.ThumbnailImage;
-                            if (File.Exists(thumbFile)) imageLocation = thumbFile;
-                            else if (DownloadAndCheckImage(url, thumbFile, item.ImageForcedAspectRatio)) imageLocation = thumbFile;
+                            if (File.Exists(thumbFile))
+                            {
+                                imageLocation = thumbFile;
+                            }
+                            else if (DownloadAndCheckImage(url, thumbFile, item.ImageForcedAspectRatio))
+                            {
+                                imageLocation = thumbFile;
+                            }
                         }
                     }
 
@@ -109,63 +141,64 @@ namespace OnlineVideos.Downloading
         {
             try
             {
-                if (forcedAspectRatio != null && forcedAspectRatio.Value == 0.0f) forcedAspectRatio = null; // don't use 0.0 but null
-
-                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-                if (request == null) return false;
-                request.UserAgent = OnlineVideoSettings.Instance.UserAgent;
-                request.Accept = "*/*";
-                request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-                request.Timeout = 5000; // don't wait longer than 5 seconds for an image
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                System.IO.Stream responseStream;
-                if (response.ContentEncoding.ToLower().Contains("gzip"))
-                    responseStream = new System.IO.Compression.GZipStream(response.GetResponseStream(), System.IO.Compression.CompressionMode.Decompress);
-                else if (response.ContentEncoding.ToLower().Contains("deflate"))
-                    responseStream = new System.IO.Compression.DeflateStream(response.GetResponseStream(), System.IO.Compression.CompressionMode.Decompress);
-                else
-                    responseStream = response.GetResponseStream();
-                System.Drawing.Image image = System.Drawing.Image.FromStream(responseStream, true, true);
-                // resample if needed
-                float imageAspectRatio = image.Width / (float)image.Height;
-                if (image.Width > OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize || image.Height > OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize
-                    || (forcedAspectRatio != null && Math.Abs(forcedAspectRatio.Value - imageAspectRatio) > 0.1))
+                if (forcedAspectRatio != null && forcedAspectRatio.Value == 0.0f)
                 {
-                    int iWidth = Math.Min(image.Width, OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize);
-                    int iHeight = Math.Min(image.Height, OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize);
+                    forcedAspectRatio = null; // don't use 0.0 but null
+                }
 
-                    if (forcedAspectRatio != null && Math.Abs(forcedAspectRatio.Value - imageAspectRatio) > 0.1) imageAspectRatio = forcedAspectRatio.Value;
-
-                    if (image.Width > image.Height)
-                        iHeight = (int)Math.Floor(iWidth / imageAspectRatio);
-                    else
-                        iWidth = (int)Math.Floor(imageAspectRatio * iHeight);
-
-                    Bitmap tmp = new Bitmap(iWidth, iHeight, image.PixelFormat);
-                    using (Graphics g = Graphics.FromImage(tmp))
+                using (var response = _thumbClient.GetAsync(url).GetAwaiter().GetResult())
+                using (var responseStream = response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())
+                {
+                    System.Drawing.Image image = System.Drawing.Image.FromStream(responseStream, true, true);
+                    // resample if needed
+                    float imageAspectRatio = image.Width / (float)image.Height;
+                    if (image.Width > OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize || image.Height > OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize
+                        || (forcedAspectRatio != null && Math.Abs(forcedAspectRatio.Value - imageAspectRatio) > 0.1))
                     {
-                        g.CompositingQuality = OnlineVideoSettings.Instance.ThumbsResizeOptions.Compositing;
-                        g.InterpolationMode = OnlineVideoSettings.Instance.ThumbsResizeOptions.Interpolation;
-                        g.SmoothingMode = OnlineVideoSettings.Instance.ThumbsResizeOptions.Smoothing;
-                        g.DrawImage(image, new Rectangle(0, 0, iWidth, iHeight));
-                        image.Dispose();
-                        image = tmp;
+                        int iWidth = Math.Min(image.Width, OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize);
+                        int iHeight = Math.Min(image.Height, OnlineVideoSettings.Instance.ThumbsResizeOptions.MaxSize);
+
+                        if (forcedAspectRatio != null && Math.Abs(forcedAspectRatio.Value - imageAspectRatio) > 0.1)
+                        {
+                            imageAspectRatio = forcedAspectRatio.Value;
+                        }
+
+                        if (image.Width > image.Height)
+                        {
+                            iHeight = (int)Math.Floor(iWidth / imageAspectRatio);
+                        }
+                        else
+                        {
+                            iWidth = (int)Math.Floor(imageAspectRatio * iHeight);
+                        }
+
+                        Bitmap tmp = new Bitmap(iWidth, iHeight, image.PixelFormat);
+                        using (Graphics g = Graphics.FromImage(tmp))
+                        {
+                            g.CompositingQuality = OnlineVideoSettings.Instance.ThumbsResizeOptions.Compositing;
+                            g.InterpolationMode = OnlineVideoSettings.Instance.ThumbsResizeOptions.Interpolation;
+                            g.SmoothingMode = OnlineVideoSettings.Instance.ThumbsResizeOptions.Smoothing;
+                            g.DrawImage(image, new Rectangle(0, 0, iWidth, iHeight));
+                            image.Dispose();
+                            image = tmp;
+                        }
                     }
+                    if (image.RawFormat.Guid == System.Drawing.Imaging.ImageFormat.Gif.Guid && file.EndsWith(".gif", StringComparison.OrdinalIgnoreCase))
+                    {
+                        image.Save(file, System.Drawing.Imaging.ImageFormat.Gif);
+                    }
+                    else if (image.RawFormat.Guid == System.Drawing.Imaging.ImageFormat.Png.Guid && file.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                    {
+                        image.Save(file, System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                    else
+                    {
+                        image.Save(file, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    }
+
+                    image.Dispose();
+                    return true;
                 }
-                if (image.RawFormat.Guid == System.Drawing.Imaging.ImageFormat.Gif.Guid && file.EndsWith(".gif"))
-                {
-                    image.Save(file, System.Drawing.Imaging.ImageFormat.Gif);
-                }
-                else if (image.RawFormat.Guid == System.Drawing.Imaging.ImageFormat.Png.Guid && file.EndsWith(".png"))
-                {
-                    image.Save(file, System.Drawing.Imaging.ImageFormat.Png);
-                }
-                else
-                {
-                    image.Save(file, System.Drawing.Imaging.ImageFormat.Jpeg);
-                }
-                image.Dispose();
-                return true;
             }
             catch (Exception ex)
             {
@@ -190,7 +223,10 @@ namespace OnlineVideos.Downloading
                         f.Delete();
                         thumbsDeleted++;
                     }
-                    if (!progressCallback((byte)((float)i / files.Length * 100))) break;
+                    if (!progressCallback((byte)((float)i / files.Length * 100)))
+                    {
+                        break;
+                    }
                 }
             }
             catch (Exception threadException)

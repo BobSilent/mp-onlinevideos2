@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+
 using OnlineVideos.CrossDomain;
 using OnlineVideos.Downloading;
 using OnlineVideos.Sites;
@@ -27,7 +28,7 @@ namespace OnlineVideos
         public string SkinMediaFolder;
         public string DownloadDir;
         public string DllsDir;
-        public string UserAgent = "Mozilla/5.0 (Windows NT 6.1)";
+        public string UserAgent = "Mozilla/5.0";
         public string SitesFileName = "OnlineVideoSites.xml";
         public bool UseAgeConfirmation = true; // enable pin by default -> child protection
         public bool AgeConfirmed = false;
