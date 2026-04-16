@@ -298,15 +298,21 @@ namespace OnlineVideos.Sites
             //Get all files starting with given path
             string[] files = Directory.GetFiles(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".*", SearchOption.TopDirectoryOnly);
 
-            //Take video files from the list only
-            string[] filesVideo = files.Where(f => IsPossibleVideo(f)).Select(f => f.Substring(0, f.LastIndexOf('.'))).ToArray();
+            // Build a HashSet of stems (full path minus extension) for video files — O(1) lookup
+            // instead of the previous O(n) filesVideo.Any(...) inside an O(n) foreach = O(n²).
+            var videoStems = new HashSet<string>(
+                files.Where(f => IsPossibleVideo(f))
+                     .Select(f => f.Substring(0, f.LastIndexOf('.'))),
+                StringComparer.OrdinalIgnoreCase);
 
             //Remove additional files
             foreach (string strFile in files)
             {
-                if (filesVideo.Any(f => strFile.StartsWith(f, StringComparison.CurrentCultureIgnoreCase)))
+                // Compute the stem of this file and check if it belongs to a kept video.
+                string strFileStem = strFile.Substring(0, strFile.LastIndexOf('.'));
+                if (videoStems.Contains(strFileStem))
                 {
-                    continue; //the file belongs to another video; skip this file
+                    continue; //the file belongs to a video; skip this file
                 }
 
                 File.Delete(strFile);
