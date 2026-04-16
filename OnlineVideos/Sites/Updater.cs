@@ -24,7 +24,15 @@ namespace OnlineVideos.Sites
         static Site[] _onlineSites;
         static Dll[] _onlineDlls;
 
-        static MD5 _md5Service = new MD5CryptoServiceProvider();
+        // Helper: compute a lowercase hex MD5 string for a byte array.
+        // Uses a local MD5 instance each time to avoid thread-safety and disposal issues.
+        private static string ComputeMD5Hex(byte[] data)
+        {
+            using (var md5 = MD5.Create())
+            {
+                return BitConverter.ToString(md5.ComputeHash(data)).Replace("-", string.Empty).ToLowerInvariant();
+            }
+        }
 
         /// <summary>
         /// Breaking API changes for Sites/Skin will change at least the minor version. 
@@ -122,13 +130,32 @@ namespace OnlineVideos.Sites
             bool saveRequired = false;
             try
             {
-                if (progressCallback != null) progressCallback.Invoke(Translation.Instance.CheckingForPluginUpdate, 0);
-                if (!VersionCompatible) return false;
-                if (progressCallback != null) progressCallback.Invoke(Translation.Instance.RetrievingRemoteSites, 2);
+                progressCallback?.Invoke(Translation.Instance.CheckingForPluginUpdate, 0);
+                if (!VersionCompatible)
+                {
+                    return false;
+                }
+
+                progressCallback?.Invoke(Translation.Instance.RetrievingRemoteSites, 2);
                 GetRemoteOverviews();
-                if (onlineSitesToUpdate == null && _onlineSites != null) onlineSitesToUpdate = _onlineSites.ToList();
-                if (onlineSitesToUpdate == null || onlineSitesToUpdate.Count == 0) return false;
-                if (progressCallback != null) if (!progressCallback.Invoke(null, 10)) return false;
+                if (onlineSitesToUpdate == null && _onlineSites != null)
+                {
+                    onlineSitesToUpdate = _onlineSites.ToList();
+                }
+
+                if (onlineSitesToUpdate == null || onlineSitesToUpdate.Count == 0)
+                {
+                    return false;
+                }
+
+                if (progressCallback != null)
+                {
+                    if (!progressCallback.Invoke(null, 10))
+                    {
+                        return false;
+                    }
+                }
+
                 Dictionary<string, bool> requiredDlls = new Dictionary<string, bool>();
                 for (int i = 0; i < onlineSitesToUpdate.Count; i++)
                 {
@@ -141,13 +168,21 @@ namespace OnlineVideos.Sites
                         if (!onlyUpdateNoAdd)
                         {
                             // remember what dlls are required and check for changed dlls later
-                            if (!string.IsNullOrEmpty(onlineSite.RequiredDll)) requiredDlls[onlineSite.RequiredDll] = true;
-                            if (progressCallback != null) progressCallback.Invoke(onlineSite.Name, null);
+                            if (!string.IsNullOrEmpty(onlineSite.RequiredDll))
+                            {
+                                requiredDlls[onlineSite.RequiredDll] = true;
+                            }
+
+                            progressCallback?.Invoke(onlineSite.Name, null);
                             localSite = GetRemoteSite(onlineSite.Name);
                             if (localSite != null)
                             {
                                 // disable local site if broken
-                                if (onlineSite.State == SiteState.Broken) localSite.IsEnabled = false;
+                                if (onlineSite.State == SiteState.Broken)
+                                {
+                                    localSite.IsEnabled = false;
+                                }
+
                                 OnlineVideoSettings.Instance.AddSite(localSite);
                                 saveRequired = true;
                             }
@@ -156,18 +191,29 @@ namespace OnlineVideos.Sites
                     else // update
                     {
                         // remember what dlls are required and check for changed dlls later (regardless of lastUpdated on site)
-                        if (!string.IsNullOrEmpty(onlineSite.RequiredDll)) requiredDlls[onlineSite.RequiredDll] = true;
+                        if (!string.IsNullOrEmpty(onlineSite.RequiredDll))
+                        {
+                            requiredDlls[onlineSite.RequiredDll] = true;
+                        }
                         // get site if updated on server
                         if ((onlineSite.LastUpdated - localSite.LastUpdated).TotalMinutes > 2)
                         {
                             // don't show the name of that site while updating if it is an adult site and the pin has not been entered yet
                             bool preventMessageDuetoAdult = (localSite.ConfirmAge && OnlineVideoSettings.Instance.UseAgeConfirmation && !OnlineVideoSettings.Instance.AgeConfirmed);
-                            if (progressCallback != null && !preventMessageDuetoAdult) progressCallback.Invoke(localSite.Name, null);
+                            if (progressCallback != null && !preventMessageDuetoAdult)
+                            {
+                                progressCallback.Invoke(localSite.Name, null);
+                            }
+
                             SiteSettings updatedSite = GetRemoteSite(onlineSite.Name);
                             if (updatedSite != null)
                             {
                                 // keep Categories if flag was set
-                                if (skipCategories) updatedSite.Categories = localSite.Categories;
+                                if (skipCategories)
+                                {
+                                    updatedSite.Categories = localSite.Categories;
+                                }
+
                                 OnlineVideoSettings.Instance.SetSiteAt(localSiteIndex, updatedSite);
                                 localSite = updatedSite;
                                 saveRequired = true;
@@ -182,25 +228,39 @@ namespace OnlineVideos.Sites
                         }
                     }
                     if (progressCallback != null)
+                    {
                         if (!progressCallback.Invoke(null, (byte)(10 + (70 * (i + 1) / onlineSitesToUpdate.Count))))
+                        {
                             return false;
+                        }
+                    }
                 }
 
-                if (progressCallback != null) if (!progressCallback.Invoke(null, null)) return false;
+                if (progressCallback != null)
+                {
+                    if (!progressCallback.Invoke(null, null))
+                    {
+                        return false;
+                    }
+                }
 
                 if (requiredDlls.Count > 0)
                 {
-                    if (progressCallback != null) progressCallback.Invoke(Translation.Instance.RetrievingRemoteDlls, null);
+                    progressCallback?.Invoke(Translation.Instance.RetrievingRemoteDlls, null);
 
                     // temp target directory for dlls (if exists, delete and recreate)
                     string dllTempDir = Path.Combine(Path.GetTempPath(), "OnlineVideos\\");
-                    if (Directory.Exists(dllTempDir)) Directory.Delete(dllTempDir, true);
+                    if (Directory.Exists(dllTempDir))
+                    {
+                        Directory.Delete(dllTempDir, true);
+                    }
+
                     Directory.CreateDirectory(dllTempDir);
                     int dllsToCopy = 0;
                     for (int i = 0; i < _onlineDlls.Length; i++)
                     {
                         Dll anOnlineDll = _onlineDlls[i];
-                        if (progressCallback != null) progressCallback.Invoke(anOnlineDll.Name, null);
+                        progressCallback?.Invoke(anOnlineDll.Name, null);
                         if (requiredDlls.ContainsKey(anOnlineDll.Name))
                         {
                             // update or download dll if needed
@@ -208,9 +268,7 @@ namespace OnlineVideos.Sites
                             bool download = true;
                             if (File.Exists(location))
                             {
-                                byte[] data = null;
-                                data = File.ReadAllBytes(location);
-                                string md5LocalDll = BitConverter.ToString(_md5Service.ComputeHash(data)).Replace("-", "").ToLower();
+                                string md5LocalDll = ComputeMD5Hex(File.ReadAllBytes(location));
                                 if (md5LocalDll == anOnlineDll.MD5)
                                 {
                                     download = false;
@@ -237,13 +295,16 @@ namespace OnlineVideos.Sites
                                 }
                             }
                         }
-                        if (progressCallback != null) progressCallback.Invoke(null, (byte)(80 + (15 * (i + 1) / _onlineDlls.Length)));
+                        progressCallback?.Invoke(null, (byte)(80 + (15 * (i + 1) / _onlineDlls.Length)));
                     }
-                    if (dllsToCopy > 0) CopyDlls(dllTempDir, OnlineVideoSettings.Instance.DllsDir);
+                    if (dllsToCopy > 0)
+                    {
+                        CopyDlls(dllTempDir, OnlineVideoSettings.Instance.DllsDir);
+                    }
                 }
                 if (saveRequired)
                 {
-                    if (progressCallback != null) progressCallback.Invoke(Translation.Instance.SavingLocalSiteList, 98);
+                    progressCallback?.Invoke(Translation.Instance.SavingLocalSiteList, 98);
                     OnlineVideoSettings.Instance.SaveSites();
                 }
             }
@@ -253,18 +314,31 @@ namespace OnlineVideos.Sites
             }
             finally
             {
-                if (progressCallback != null) progressCallback.Invoke(Translation.Instance.Done, 100);
+                progressCallback?.Invoke(Translation.Instance.Done, 100);
             }
-            if (newDllsDownloaded) return true;
-            else if (saveRequired) return null;
-            else return false;
+            if (newDllsDownloaded)
+            {
+                return true;
+            }
+            else if (saveRequired)
+            {
+                return null;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public static SiteSettings GetRemoteSite(string siteName, OnlineVideosService ws = null)
         {
             try
             {
-                if (ws == null) ws = new OnlineVideosService() { Timeout = 30000, EnableDecompression = true };
+                if (ws == null)
+                {
+                    ws = new OnlineVideosService() { Timeout = 30000, EnableDecompression = true };
+                }
+
                 string siteXml = ws.GetSiteXml(siteName);
                 if (siteXml.Length > 0)
                 {
@@ -276,11 +350,11 @@ namespace OnlineVideos.Sites
                         {
                             string iconPath = Path.Combine(OnlineVideoSettings.Instance.ThumbsDir, @"Icons\" + siteName + ".png");
                             byte[] icon = ws.GetSiteIconIfChanged(siteName,
-                                File.Exists(iconPath) ?
-                                    BitConverter.ToString(_md5Service.ComputeHash(File.ReadAllBytes(iconPath))).Replace("-", "").ToLower()
-                                    :
-                                    null);
-                            if (icon != null && icon.Length > 0) File.WriteAllBytes(iconPath, icon);
+                                File.Exists(iconPath) ? ComputeMD5Hex(File.ReadAllBytes(iconPath)) : null);
+                            if (icon != null && icon.Length > 0)
+                            {
+                                File.WriteAllBytes(iconPath, icon);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -290,11 +364,11 @@ namespace OnlineVideos.Sites
                         {
                             string bannerPath = Path.Combine(OnlineVideoSettings.Instance.ThumbsDir, @"Banners\" + siteName + ".png");
                             byte[] banner = ws.GetSiteBannerIfChanged(siteName,
-                                File.Exists(bannerPath) ?
-                                    BitConverter.ToString(_md5Service.ComputeHash(File.ReadAllBytes(bannerPath))).Replace("-", "").ToLower()
-                                    :
-                                    null);
-                            if (banner != null && banner.Length > 0) File.WriteAllBytes(bannerPath, banner);
+                                File.Exists(bannerPath) ? ComputeMD5Hex(File.ReadAllBytes(bannerPath)) : null);
+                            if (banner != null && banner.Length > 0)
+                            {
+                                File.WriteAllBytes(bannerPath, banner);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -356,7 +430,11 @@ namespace OnlineVideos.Sites
                 Log.Info("Downloading '{0}.dll'", dllName);
                 OnlineVideosService ws = new OnlineVideosService() { Timeout = 30000, EnableDecompression = true };
                 byte[] onlineDllData = ws.GetDll(dllName);
-                if (onlineDllData != null && onlineDllData.Length > 0) File.WriteAllBytes(localPath, onlineDllData);
+                if (onlineDllData != null && onlineDllData.Length > 0)
+                {
+                    File.WriteAllBytes(localPath, onlineDllData);
+                }
+
                 return true;
             }
             catch (Exception ex)

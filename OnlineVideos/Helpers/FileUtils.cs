@@ -9,8 +9,12 @@ namespace OnlineVideos.Helpers
         public static string GetThumbFile(string url)
         {
             // gets a CRC code for the given url and returns a full file path to the image: thums_dir\crc.jpg|gif|png
-            string possibleExtension = System.IO.Path.GetExtension(url).ToLower();
-            if (possibleExtension != ".gif" & possibleExtension != ".jpg" & possibleExtension != ".png") possibleExtension = ".jpg";
+            string possibleExtension = Path.GetExtension(url).ToLowerInvariant();
+            if (possibleExtension != ".gif" && possibleExtension != ".jpg" && possibleExtension != ".png")
+            {
+                possibleExtension = ".jpg";
+            }
+
             string name = string.Format("Thumbs{0}L{1}", EncryptionUtils.CalculateCRC32(url), possibleExtension);
             return Path.Combine(Path.Combine(OnlineVideoSettings.Instance.ThumbsDir, @"Cache\"), name);
         }
@@ -31,8 +35,15 @@ namespace OnlineVideos.Helpers
 
         public static string GetNextFileName(string fullFileName)
         {
-            if (string.IsNullOrEmpty(fullFileName)) throw new ArgumentNullException("fullFileName");
-            if (!File.Exists(fullFileName)) return fullFileName;
+            if (string.IsNullOrEmpty(fullFileName))
+            {
+                throw new ArgumentNullException("fullFileName");
+            }
+
+            if (!File.Exists(fullFileName))
+            {
+                return fullFileName;
+            }
 
             string baseFileName = Path.GetFileNameWithoutExtension(fullFileName);
             string ext = Path.GetExtension(fullFileName);

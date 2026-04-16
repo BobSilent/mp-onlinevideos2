@@ -34,7 +34,7 @@ namespace OnlineVideos
 
         public bool HasSubtitles()
         {
-            return SubtitleTexts != null && SubtitleTexts.HasItems;
+            return SubtitleTexts?.HasItems ?? false;
         }
 
         public void CleanDescriptionAndTitle()
@@ -45,7 +45,7 @@ namespace OnlineVideos
 
         public override string ToString()
         {
-            return string.Format("Title:{0}\r\nDesc:{1}\r\nVidUrl:{2}\r\nImgUrl:{3}\r\nLength:{4}\r\nAirdate:{5}", Title, Description, VideoUrl, Thumb, Length, Airdate);
+            return $"Title:{Title}\r\nDesc:{Description}\r\nVidUrl:{VideoUrl}\r\nImgUrl:{Thumb}\r\nLength:{Length}\r\nAirdate:{Airdate}";
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace OnlineVideos
         public virtual Dictionary<string, string> GetExtendedProperties()
         {
             IVideoDetails details = Other as IVideoDetails;
-            return details == null ? null : details.GetExtendedProperties();
+            return details?.GetExtendedProperties();
         }
 
         public VideoInfo CloneForPlaylist(string videoUrl, bool withPlaybackOptions)
@@ -134,7 +134,10 @@ namespace OnlineVideos
             VideoInfo newVideoInfo = (VideoInfo)MemberwiseClone(false);
             if (withPlaybackOptions)
             {
-                if (PlaybackOptions != null) newVideoInfo.PlaybackOptions = new Dictionary<string, string>(PlaybackOptions);
+                if (PlaybackOptions != null)
+                {
+                    newVideoInfo.PlaybackOptions = new Dictionary<string, string>(PlaybackOptions);
+                }
             }
             else
             {
@@ -152,24 +155,26 @@ namespace OnlineVideos
         /// <returns></returns>
         public string GetPreferredUrl(bool first)
         {
-            if (PlaybackOptions == null || PlaybackOptions.Count == 0) return VideoUrl;
-            else
-                if (PlaybackOptions.Count == 1)
+            if (PlaybackOptions == null || PlaybackOptions.Count == 0)
+            {
+                return VideoUrl;
+            }
+
+            if (PlaybackOptions.Count == 1)
+            {
+                string resultUrl = PlaybackOptions.First().Value;
+                PlaybackOptions = null;// only one url found, PlaybackOptions not needed
+                if (string.IsNullOrEmpty(VideoUrl))
                 {
-                    string resultUrl = PlaybackOptions.First().Value;
-                    PlaybackOptions = null;// only one url found, PlaybackOptions not needed
-                    if (String.IsNullOrEmpty(VideoUrl))
-                        VideoUrl = resultUrl;
-                    return resultUrl;
-                }
-                else
-                {
-                    if (first)
-                        return PlaybackOptions.First().Value;
-                    else
-                        return PlaybackOptions.Last().Value;
+                    VideoUrl = resultUrl;
                 }
 
+                return resultUrl;
+            }
+            else
+            {
+                return first ? PlaybackOptions.First().Value : PlaybackOptions.Last().Value;
+            }
         }
     }
 }

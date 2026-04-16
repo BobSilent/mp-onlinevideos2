@@ -42,11 +42,16 @@ namespace OnlineVideos.Helpers
                 match => ((char)Int32.Parse(match.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
 
+        // Shared Random avoids duplicate sequences when called in the same tick.
+        private static readonly Random _random = new Random();
+
         public static string GetRandomLetters(int amount)
         {
-            var random = new Random();
             var sb = new StringBuilder(amount);
-            for (int i = 0; i < amount; i++) sb.Append(Encoding.ASCII.GetString(new byte[] { (byte)random.Next('A', 'Z') }));
+            for (int i = 0; i < amount; i++)
+            {
+                sb.Append((char)_random.Next('A', 'Z' + 1));
+            }
             return sb.ToString();
         }
 
@@ -55,18 +60,22 @@ namespace OnlineVideos.Helpers
             if (tokens.Length > 0)
             {
 
-                string regex = @"([";
+                var regexBuilder = new StringBuilder(@"([");
                 foreach (string s in tokens)
-                    regex += s;
-                regex += "])";
-                Regex RE = new Regex(regex);
+                {
+                    regexBuilder.Append(s);
+                }
+                regexBuilder.Append("])");
+                Regex RE = new Regex(regexBuilder.ToString());
                 if (dropToken)
                 {
                     string output = RE.Replace(text, " ");
                     return _reWhitespace.Split(output);
                 }
                 else
+                {
                     return (RE.Split(text));
+                }
             }
             return null;
         }
@@ -102,13 +111,29 @@ namespace OnlineVideos.Helpers
 
         public static string GetSubString(string s, string start, string until)
         {
-            if (string.IsNullOrEmpty(s)) return string.Empty;
+            if (string.IsNullOrEmpty(s))
+            {
+                return string.Empty;
+            }
+
             int p = s.IndexOf(start);
-            if (p == -1) return String.Empty;
+            if (p == -1)
+            {
+                return String.Empty;
+            }
+
             p += start.Length;
-            if (until == null) return s.Substring(p);
+            if (until == null)
+            {
+                return s.Substring(p);
+            }
+
             int q = s.IndexOf(until, p);
-            if (q == -1) return s.Substring(p);
+            if (q == -1)
+            {
+                return s.Substring(p);
+            }
+
             return s.Substring(p, q - p);
         }
 
@@ -119,9 +144,13 @@ namespace OnlineVideos.Helpers
             if (m.Success)
             {
                 if (group == null)
+                {
                     result = m.Groups[1].Value;
+                }
                 else
+                {
                     result = m.Groups[group].Value;
+                }
             }
             return result == null ? string.Empty : result;
         }
@@ -134,12 +163,18 @@ namespace OnlineVideos.Helpers
                 n = n * 36;
                 char c = num[i];
                 if (Char.IsDigit(c))
+                {
                     n += ((int)c) - 0x30;
+                }
                 else
+                {
                     n += ((int)c) - 0x61 + 10;
+                }
             }
             if (n < 0 || n >= pars.Length)
+            {
                 return n.ToString();
+            }
 
             return pars[n];
         }
@@ -147,7 +182,10 @@ namespace OnlineVideos.Helpers
         public static string UnPack(string packed)
         {
             int p = 2;
-            while (p < packed.Length && !(packed[p] == '\'' && packed[p - 1] != '\\')) p++;
+            while (p < packed.Length && !(packed[p] == '\'' && packed[p - 1] != '\\'))
+            {
+                p++;
+            }
             //packed[p]=first non-escaped single quote
 
             string pattern = packed.Substring(0, p - 1).Replace(@"\'", @"'");
@@ -156,21 +194,34 @@ namespace OnlineVideos.Helpers
 
             string[] pars = packed.Substring(p + 1, q - p - 1).Split('|');
             for (int i = 0; i < pars.Length; i++)
+            {
                 if (String.IsNullOrEmpty(pars[i]))
+                {
                     if (i < 10)
+                    {
                         pars[i] = i.ToString();
+                    }
                     else
                         if (i < 36)
-                        pars[i] = ((char)(i + 0x61 - 10)).ToString();
-                    else
-                        pars[i] = (i - 26).ToString();
+                        {
+                            pars[i] = ((char)(i + 0x61 - 10)).ToString();
+                        }
+                        else
+                        {
+                            pars[i] = (i - 26).ToString();
+                        }
+                }
+            }
+
             string res = String.Empty;
             string num = String.Empty;
             for (int i = 0; i < pattern.Length; i++)
             {
                 char c = pattern[i];
                 if (Char.IsDigit(c) || Char.IsLower(c))
+                {
                     num += c;
+                }
                 else
                 {
                     if (num.Length > 0)
@@ -182,7 +233,9 @@ namespace OnlineVideos.Helpers
                 }
             }
             if (num.Length > 0)
+            {
                 res += GetVal(num, pars);
+            }
 
             return res;
         }
@@ -208,8 +261,13 @@ namespace OnlineVideos.Helpers
         public static string Unpack(string p, int a, int c, string[] k, int e, string d)
         {
             for (int i = c - 1; i >= 0; i--)
+            {
                 if (i < k.Length && !String.IsNullOrEmpty(k[i]))
+                {
                     p = Regex.Replace(p, @"\b" + ToBase(i, a) + @"\b", k[i]);
+                }
+            }
+
             return p;
         }
 

@@ -42,7 +42,11 @@ namespace OnlineVideos.Helpers
     {
         public static string CalculateCRC32(string strLine)
         {
-            if (string.IsNullOrEmpty(strLine)) return string.Empty;
+            if (string.IsNullOrEmpty(strLine))
+            {
+                return string.Empty;
+            }
+
             CRC32 crc = new CRC32();
             crc.Update(Encoding.UTF8.GetBytes(strLine));
             return crc.Value.ToString();
@@ -50,22 +54,18 @@ namespace OnlineVideos.Helpers
 
         public static string GetMD5Hash(string input)
         {
-            byte[] data;
-            int count;
-            StringBuilder result;
-
             using (MD5 md5Hasher = MD5.Create())
             {
-                data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
-            }
-            // Loop through each byte of the hashed data and format each one as a hexadecimal string.
-            result = new StringBuilder();
-            for (count = 0; count < data.Length; count++)
-            {
-                result.Append(data[count].ToString("x2", System.Globalization.CultureInfo.InvariantCulture));
-            }
+                byte[] data = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(input));
+                // MD5 always produces 16 bytes = 32 hex characters
+                var result = new StringBuilder(32);
+                foreach (byte b in data)
+                {
+                    result.Append(b.ToString("x2", System.Globalization.CultureInfo.InvariantCulture));
+                }
 
-            return result.ToString();
+                return result.ToString();
+            }
         }
 
         static readonly byte[] aditionalEntropy = { };

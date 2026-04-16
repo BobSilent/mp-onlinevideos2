@@ -8,11 +8,17 @@ namespace OnlineVideos.Helpers
 {
     public static class CollectionUtils
     {
+        private static readonly XmlWriterSettings _settings = new XmlWriterSettings()
+        {
+            Encoding = Encoding.UTF8,
+            Indent = true,
+            OmitXmlDeclaration = true
+        };
+
         public static string DictionaryToString(Dictionary<string, string> dic)
         {
             var sb = new StringBuilder();
-            XmlWriterSettings settings = new XmlWriterSettings() { Encoding = Encoding.UTF8, Indent = true, OmitXmlDeclaration = true };
-            using (XmlWriter writer = XmlWriter.Create(sb, settings))
+            using (XmlWriter writer = XmlWriter.Create(sb, _settings))
             {
                 writer.WriteStartElement("dictionary");
                 foreach (string key in dic.Keys)
@@ -39,7 +45,11 @@ namespace OnlineVideos.Helpers
             {
                 bool wasEmpty = reader.IsEmptyElement;
                 reader.Read();
-                if (wasEmpty) return null;
+                if (wasEmpty)
+                {
+                    return null;
+                }
+
                 reader.ReadStartElement("dictionary");
                 while (reader.NodeType != XmlNodeType.EndElement)
                 {
@@ -59,17 +69,19 @@ namespace OnlineVideos.Helpers
             return dic;
         }
 
+        // Shared instance avoids duplicate shuffle sequences when Randomize is called
+        // multiple times within the same clock tick (new Random() seeds from the system clock).
+        private static readonly Random _rng = new Random();
+
         public static void Randomize<T>(this List<T> list)
         {
-            Random rng = new Random();
             int n = list.Count;
             while (n > 1)
             {
                 n--;
-                int k = rng.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
+                int k = _rng.Next(n + 1);
+                // swap list[n] and list[k]
+                (list[n], list[k]) = (list[k], list[n]);
             }
         }
     }
