@@ -48,10 +48,7 @@ namespace OnlineVideos.Helpers
 
         public static void Dispose()
         {
-            if (_Instance != null)
-            {
-                _Instance.webView.Dispose();
-            }
+            _Instance?.webView.Dispose();
             _Instance = null;
         }
 

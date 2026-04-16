@@ -92,8 +92,7 @@ namespace OnlineVideos.Subtitles
 
         public void WaitForSubtitleCompleted()
         {
-            if (subtitleThread != null)
-                subtitleThread.Join();
+            subtitleThread?.Join();
         }
 
         // keep all references to subtitledownloader in separate methods, so that methods that are called from siteutil don't throw an ecxeption

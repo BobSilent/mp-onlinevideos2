@@ -427,10 +427,7 @@ namespace RssToolkit.Rss
                 timeZones.Add("X", 3 * 60);
                 timeZones.Add("Y", 12 * 60);
 
-                if (HttpContext.Current != null)
-                {
-                    HttpContext.Current.Cache.Insert(TimeZoneCacheKey, timeZones);
-                }
+                HttpContext.Current?.Cache.Insert(TimeZoneCacheKey, timeZones);
             }
 
             if (zone.IndexOfAny(new char[] { '+', '-' }) == 0)  // +hhmm format

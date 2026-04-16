@@ -85,10 +85,7 @@ namespace OnlineVideos.Helpers
             }
             finally
             {
-                if (s != null)
-                {
-                    s.Close();
-                }
+                s?.Close();
             }
 
             int i = BitConverter.ToInt32(b, c_PeHeaderOffset);

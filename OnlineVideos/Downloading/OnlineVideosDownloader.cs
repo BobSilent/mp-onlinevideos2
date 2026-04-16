@@ -188,8 +188,7 @@ namespace OnlineVideos.Downloading
         {
             this._Cancelled = true;
 
-            if (this._Tasks != null)
-                this._Tasks.ForEach(t => t.Cancelled = true);
+            this._Tasks?.ForEach(t => t.Cancelled = true);
         }
 
         public Exception Download(DownloadInfo downloadInfo)
@@ -346,9 +345,7 @@ namespace OnlineVideos.Downloading
             finally
             {
                 //Delete downloaded files (if exists)
-                if (this._Tasks != null)
-                {
-                    this._Tasks.ForEach(t =>
+                this._Tasks?.ForEach(t =>
                     {
                         if (File.Exists(t.FilePath))
                         {
@@ -356,7 +353,6 @@ namespace OnlineVideos.Downloading
                             catch { }
                         }
                     });
-                }
             }
         }
 

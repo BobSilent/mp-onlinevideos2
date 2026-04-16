@@ -21,7 +21,7 @@ namespace OnlineVideos.Downloading
         {
             set
             {
-                if (_downloadInfo != null) _downloadInfo.DownloadProgressCallback(value, 0);
+                _downloadInfo?.DownloadProgressCallback(value, 0);
             }
         }
 
@@ -29,7 +29,7 @@ namespace OnlineVideos.Downloading
         {
             set
             {
-                if (_downloadInfo != null) _downloadInfo.DownloadProgressCallback(0, value);
+                _downloadInfo?.DownloadProgressCallback(0, value);
             }
         }
 
@@ -37,7 +37,7 @@ namespace OnlineVideos.Downloading
         {
             set
             {
-                if (_downloadInfo != null) _downloadInfo.DownloadProgressCallback(value);
+                _downloadInfo?.DownloadProgressCallback(value);
             }
         }
 
@@ -48,7 +48,7 @@ namespace OnlineVideos.Downloading
         public void Abort()
         {
             Cancelled = true;
-            if (_downloadThread != null) _downloadThread.Abort();
+            _downloadThread?.Abort();
         }
 
         public Exception Download(DownloadInfo downloadInfo)

@@ -61,7 +61,7 @@ namespace OnlineVideos.Downloading
             }
             finally
             {
-                if (response != null) response.Close();
+                response?.Close();
             }
         }
 

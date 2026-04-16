@@ -29,7 +29,7 @@ namespace OnlineVideos
         /// <param name="arg">An array of arguments used for the <paramref name="format"/> string.</param>
         public static void Debug(string format, params object[] arg)
         {
-            if (OnlineVideoSettings.Instance.Logger != null) OnlineVideoSettings.Instance.Logger.Debug(format, arg);
+            OnlineVideoSettings.Instance.Logger?.Debug(format, arg);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace OnlineVideos
         /// <param name="ex">The <see cref="Exception"/> to log.</param>
         public static void Error(Exception ex)
         {
-            if (OnlineVideoSettings.Instance.Logger != null) OnlineVideoSettings.Instance.Logger.Error(ex.ToString());
+            OnlineVideoSettings.Instance.Logger?.Error(ex.ToString());
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace OnlineVideos
         /// <param name="arg">An array of arguments used for the <paramref name="format"/> string.</param>
         public static void Error(string format, params object[] arg)
         {
-            if (OnlineVideoSettings.Instance.Logger != null) OnlineVideoSettings.Instance.Logger.Error(format, arg);
+            OnlineVideoSettings.Instance.Logger?.Error(format, arg);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace OnlineVideos
         /// <param name="arg">An array of arguments used for the <paramref name="format"/> string.</param>
         public static void Info(string format, params object[] arg)
         {
-            if (OnlineVideoSettings.Instance.Logger != null) OnlineVideoSettings.Instance.Logger.Info(format, arg);
+            OnlineVideoSettings.Instance.Logger?.Info(format, arg);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace OnlineVideos
         /// <param name="arg">An array of arguments used for the <paramref name="format"/> string.</param>
         public static void Warn(string format, params object[] arg)
         {
-            if (OnlineVideoSettings.Instance.Logger != null) OnlineVideoSettings.Instance.Logger.Warn(format, arg);
+            OnlineVideoSettings.Instance.Logger?.Warn(format, arg);
         }
     }
 }
