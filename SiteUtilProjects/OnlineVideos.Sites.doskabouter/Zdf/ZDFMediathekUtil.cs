@@ -22,8 +22,15 @@ namespace OnlineVideos.Sites.Zdf
         [Category("OnlineVideosUserConfiguration"), Description("MIME Types (comma seperated) priority order (left highest prio)"), LocalizableDisplayName("MIME types priority")]
         protected string prioOrderMimeTypes = "video/webm, video/mp4, application/x-mpegURL";
 
-        private IEnumerable<string> GetMimeTypesPrioOrder()
-            => prioOrderMimeTypes.Split(new [] {',', ';'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+        private string[] _mimeTypesPrioOrderCache;
+
+        private IReadOnlyList<string> GetMimeTypesPrioOrder()
+        {
+            // Cache the split result — prioOrderMimeTypes is a configuration field that only
+            // changes between Initialize calls, not during video resolution.
+            return _mimeTypesPrioOrderCache ??= prioOrderMimeTypes
+                .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+        }
 
 
         private static readonly string RELEVANT_TEASERIMAGE_LAYOUT = "384x216";
@@ -51,6 +58,9 @@ namespace OnlineVideos.Sites.Zdf
         public override void Initialize(SiteSettings siteSettings)
         {
             base.Initialize(siteSettings);
+            // Configuration fields (e.g. prioOrderMimeTypes) are set by base.Initialize via reflection;
+            // clear the cached split so GetMimeTypesPrioOrder() rebuilds from the new value.
+            _mimeTypesPrioOrderCache = null;
 
             // Explicitly enable TLS 1.0/1.1/1.2 — required for some ZDF endpoints.
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls

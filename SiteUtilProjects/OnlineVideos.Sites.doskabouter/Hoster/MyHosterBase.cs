@@ -30,7 +30,7 @@ namespace OnlineVideos.Hoster
             if (extraValues != null)
                 values.AddRange(extraValues);
             if (values.Count > 0)
-                page = WebCache.Instance.GetWebData(url, String.Join("&", values.ToArray()), forceUTF8: true, cookies: cookies);
+                page = WebCache.Instance.GetWebData(url, string.Join("&", values), forceUTF8: true, cookies: cookies);
             // Sometimes gorillavid returns "utf8" instead of "utf-8" as charset which crashes getwebdatafrompost, so force it to utf8
 
             return page;
@@ -41,11 +41,13 @@ namespace OnlineVideos.Hoster
             string key = groups["name"].Value;
             string value = groups["value"].Value;
 
-            if (!String.IsNullOrEmpty(key) && !String.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
             {
-                string valueToAdd = String.Format("{0}={1}", key, HttpUtility.UrlEncode(value));
+                string valueToAdd = $"{key}={HttpUtility.UrlEncode(value)}";
                 if (ignoreValues == null || Array.IndexOf(ignoreValues, valueToAdd) == -1)
+                {
                     values.Add(valueToAdd);
+                }
             }
         }
 
@@ -58,7 +60,7 @@ namespace OnlineVideos.Hoster
                 if (webdata.Contains("flashvars"))
                     return webdata;
                 string s = WiseCrack(webdata);
-                if (!String.IsNullOrEmpty(s))
+                if (!string.IsNullOrEmpty(s))
                     return s;
 
                 m = m.NextMatch();
@@ -72,8 +74,7 @@ namespace OnlineVideos.Hoster
             if (m.Success)
             {
                 string fileKey = m.Groups["filekey"].Value.Replace(".", "%2E").Replace("-", "%2D");
-                string url2 = String.Format(@"{0}/api/player.api.php?key={1}&user=undefined&codes=1&pass=undefined&file={2}",
-                    m.Groups["domain"].Value, fileKey, m.Groups["file"].Value);
+                string url2 = $"{m.Groups["domain"].Value}/api/player.api.php?key={fileKey}&user=undefined&codes=1&pass=undefined&file={m.Groups["file"].Value}";
                 page = WebCache.Instance.GetWebData(url2);
                 m = Regex.Match(page, @"url=(?<url>[^&]*)&");
                 if (m.Success)
@@ -91,7 +92,7 @@ namespace OnlineVideos.Hoster
                     if (n.Success && Helpers.UriUtils.IsValidUri(n.Groups["url"].Value)) return n.Groups["url"].Value;
                 }
             }
-            return String.Empty;
+            return string.Empty;
         }
 
         private int FromBase36(char c)
@@ -176,7 +177,7 @@ namespace OnlineVideos.Hoster
 
         internal static void TestForError(Match m, string url = "")
         {
-            if (String.IsNullOrEmpty(url) && m.Success)
+            if (string.IsNullOrEmpty(url) && m.Success)
                 throw new OnlineVideosException(m.Groups["message"].Value);
         }
 
