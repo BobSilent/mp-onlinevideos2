@@ -35,7 +35,7 @@ namespace OnlineVideos.MediaPortal1
 			_stopEvent.Set(); // wake the worker from any sleep and tell it to exit
 		}
 
-		void Worker()
+		private void Worker()
 		{
 			bool setOnce = false;
 			uint currentRotationIndex = 0;
@@ -45,33 +45,44 @@ namespace OnlineVideos.MediaPortal1
 			{
 				while (!_stopEvent.IsSet)
 				{
+					int maxItems = (int)PluginConfiguration.Instance.LatestVideosMaxItems;
 					if ((DateTime.Now - lastDiscovery).TotalMinutes > PluginConfiguration.Instance.LatestVideosOnlineDataRefresh)
 					{
 						Dictionary<string, List<VideoInfo>> latestVideosPerSite = DiscoverAllLatestVideos();
 						lastDiscovery = DateTime.Now;
 						currentRotationIndex = 0;
 						setOnce = false;
-						int previousLatetsVideosCount = latestVideos.Count;
+						int previousLatestVideosCount = latestVideos.Count;
 						latestVideos.Clear();
-						foreach (var l in latestVideosPerSite) latestVideos.AddRange(l.Value.Select(v => new KeyValuePair<string, VideoInfo>(l.Key, v)));
+						// Flatten per-site lists directly — avoids Select IEnumerable allocation per site.
+						foreach (var l in latestVideosPerSite)
+						{
+							foreach (var v in l.Value)
+							{
+								latestVideos.Add(new KeyValuePair<string, VideoInfo>(l.Key, v));
+							}
+						}
 						Log.Instance.Info("LatestVideosManager found {0} videos from {1} SiteUtils.", latestVideos.Count, latestVideosPerSite.Count);
-						int less = Math.Min(previousLatetsVideosCount, (int)PluginConfiguration.Instance.LatestVideosMaxItems) - Math.Min(latestVideos.Count, (int)PluginConfiguration.Instance.LatestVideosMaxItems);
+						int less = Math.Min(previousLatestVideosCount, maxItems) - Math.Min(latestVideos.Count, maxItems);
 						while (less > 0)
 						{
 							// reset the GuiProperties in case we found less latest videos than before and than should be shown in rotation
-							ResetLatestVideoGuiProperties((int)PluginConfiguration.Instance.LatestVideosMaxItems - less + 1);
+							ResetLatestVideoGuiProperties(maxItems - less + 1);
 							less--;
 						}
-						GUIPropertyManager.SetProperty("#OnlineVideos.LatestVideosEnabled", (Math.Min(latestVideos.Count, PluginConfiguration.Instance.LatestVideosMaxItems) > 0).ToString().ToLower());
+						// SetProperty expects lowercase "true"/"false" — avoid ToString().ToLower() allocation.
+						bool hasVideos = Math.Min(latestVideos.Count, maxItems) > 0;
+						GUIPropertyManager.SetProperty("#OnlineVideos.LatestVideosEnabled", hasVideos ? "true" : "false");
 						if (latestVideos.Count > 0)
 						{
 							if (PluginConfiguration.Instance.LatestVideosRandomize) latestVideos.Randomize();
-							ImageDownloader.DownloadImages<VideoInfo>(latestVideos.Select(v => v.Value).ToList());
+							// ConvertAll avoids a separate Select+ToList allocation.
+							ImageDownloader.DownloadImages<VideoInfo>(latestVideos.ConvertAll(v => v.Value));
 						}
 					}
-					if (latestVideos.Count > 0 && (!setOnce || latestVideos.Count > PluginConfiguration.Instance.LatestVideosMaxItems)) // only needed ONCE if there are no more latestVideos than amount to be shown
+					if (latestVideos.Count > 0 && (!setOnce || latestVideos.Count > maxItems)) // only needed ONCE if there are no more latestVideos than amount to be shown
 					{
-						for (int i = 1; i <= Math.Min(latestVideos.Count, PluginConfiguration.Instance.LatestVideosMaxItems); i++)
+						for (int i = 1; i <= Math.Min(latestVideos.Count, maxItems); i++)
 						{
 							int num = (int)currentRotationIndex + i - 1;
 							if (num >= latestVideos.Count) num = i - 1;
@@ -80,23 +91,25 @@ namespace OnlineVideos.MediaPortal1
 						setOnce = true;
 						currentRotationIndex++;
 						if (currentRotationIndex >= latestVideos.Count) currentRotationIndex = 0;
-								}
-								// Sleep for the rotation interval; returns early if Stop() is called.
-								_stopEvent.Wait(TimeSpan.FromSeconds(PluginConfiguration.Instance.LatestVideosGuiDataRefresh));
-								if (_stopEvent.IsSet) break;
-								// Don't rotate during fullscreen playback; wake immediately on Stop().
-								while (!_stopEvent.IsSet && g_Player.FullScreen)
-									_stopEvent.Wait(TimeSpan.FromSeconds(1));
-							}
-						}
-						catch (Exception ex)
-						{
-							Log.Instance.Warn("LatestVideos thread ended unexpected: {0}", ex.Message);
-						}
-						workerThread = null;
 					}
+					// Sleep for the rotation interval; returns early if Stop() is called.
+					_stopEvent.Wait(TimeSpan.FromSeconds(PluginConfiguration.Instance.LatestVideosGuiDataRefresh));
+					if (_stopEvent.IsSet) break;
+					// Don't rotate during fullscreen playback; wake immediately on Stop().
+					while (!_stopEvent.IsSet && g_Player.FullScreen)
+					{
+						_stopEvent.Wait(TimeSpan.FromSeconds(1));
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Instance.Warn("LatestVideos thread ended unexpected: {0}", ex.Message);
+			}
+			workerThread = null;
+		}
 
-		Dictionary<string, List<VideoInfo>> DiscoverAllLatestVideos()
+		private Dictionary<string, List<VideoInfo>> DiscoverAllLatestVideos()
 		{
 			Log.Instance.Info("LatestVideosManager getting new data from SiteUtils.");
 			Dictionary<string, List<VideoInfo>> latestVideos = new Dictionary<string, List<VideoInfo>>();
@@ -121,32 +134,33 @@ namespace OnlineVideos.MediaPortal1
 			return latestVideos;
 		}
 
-		void SetLatestVideoGuiProperties(KeyValuePair<string, VideoInfo> video, int index)
+		private void SetLatestVideoGuiProperties(KeyValuePair<string, VideoInfo> video, int index)
 		{
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Site", index), video.Key);
+			string prefix = $"#OnlineVideos.LatestVideo{index}.";
+			GUIPropertyManager.SetProperty(prefix + "Site", video.Key);
 
 			string siteIcon = SiteImageExistenceCache.GetImageForSite(video.Key, null, "Icon");
 			if (string.IsNullOrEmpty(siteIcon)) siteIcon = SiteImageExistenceCache.GetImageForSite("OnlineVideos", type: "Icon");
 			if (siteIcon == null) siteIcon = string.Empty;
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.SiteIcon", index), siteIcon);
+			GUIPropertyManager.SetProperty(prefix + "SiteIcon", siteIcon);
 
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Title", index), video.Value.Title);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Aired", index), video.Value.Airdate);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Duration", index), video.Value.Length);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Thumb", index), video.Value.ThumbnailImage);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Description", index), video.Value.Description);
+			GUIPropertyManager.SetProperty(prefix + "Title",       video.Value.Title);
+			GUIPropertyManager.SetProperty(prefix + "Aired",       video.Value.Airdate);
+			GUIPropertyManager.SetProperty(prefix + "Duration",    video.Value.Length);
+			GUIPropertyManager.SetProperty(prefix + "Thumb",       video.Value.ThumbnailImage);
+			GUIPropertyManager.SetProperty(prefix + "Description", video.Value.Description);
 		}
 
-		void ResetLatestVideoGuiProperties(int index)
+		private void ResetLatestVideoGuiProperties(int index)
 		{
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Site", index), string.Empty);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.SiteIcon", index), string.Empty);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Title", index), string.Empty);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Aired", index), string.Empty);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Duration", index), string.Empty);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Thumb", index), string.Empty);
-			GUIPropertyManager.SetProperty(string.Format("#OnlineVideos.LatestVideo{0}.Description", index), string.Empty);
-
+			string prefix = $"#OnlineVideos.LatestVideo{index}.";
+			GUIPropertyManager.SetProperty(prefix + "Site",        string.Empty);
+			GUIPropertyManager.SetProperty(prefix + "SiteIcon",    string.Empty);
+			GUIPropertyManager.SetProperty(prefix + "Title",       string.Empty);
+			GUIPropertyManager.SetProperty(prefix + "Aired",       string.Empty);
+			GUIPropertyManager.SetProperty(prefix + "Duration",    string.Empty);
+			GUIPropertyManager.SetProperty(prefix + "Thumb",       string.Empty);
+			GUIPropertyManager.SetProperty(prefix + "Description", string.Empty);
 		}
 	}
 }
