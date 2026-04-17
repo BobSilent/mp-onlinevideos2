@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Reflection;
 using OnlineVideos.MPUrlSourceFilter.UserSettings;
 
@@ -16,7 +18,7 @@ namespace OnlineVideos.Sites
 
         internal override string GetConfigurationKey(string fieldName)
         {
-            return string.Format("{0}.{1}", Helpers.FileUtils.GetSaveFilename(Settings.Name).Replace(' ', '_'), fieldName);
+            return $"{Helpers.FileUtils.GetSaveFilename(Settings.Name).Replace(' ', '_')}.{fieldName}";
         }
 
         #endregion
@@ -62,6 +64,10 @@ namespace OnlineVideos.Sites
         /// </summary>
         public virtual SiteSettings Settings { get; protected set; }
 
+        // Caches reflected fields per concrete type so GetFields is called only once per type.
+        private static readonly ConcurrentDictionary<Type, FieldInfo[]> _fieldCache =
+            new ConcurrentDictionary<Type, FieldInfo[]>();
+
         /// <summary>
         /// You should always call this implementation, even when overriding it. It is called after the instance has been created
         /// in order to configure settings from the xml for this util.
@@ -72,7 +78,11 @@ namespace OnlineVideos.Sites
             Settings = siteSettings;
 
             // apply custom settings
-            foreach (FieldInfo field in this.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+            FieldInfo[] fields = _fieldCache.GetOrAdd(
+                this.GetType(),
+                t => t.GetFields(BindingFlags.NonPublic | BindingFlags.Instance));
+
+            foreach (FieldInfo field in fields)
             {
                 object[] attrs = field.GetCustomAttributes(typeof(CategoryAttribute), false);
                 if (attrs.Length > 0)
@@ -95,11 +105,13 @@ namespace OnlineVideos.Sites
                         }
                         catch (Exception ex)
                         {
-                            Log.Warn("{0} - could not set Configuration Value: {1}. Error: {2}", siteSettings.Name, field.Name, ex.Message);
+                            Log.Warn($"{siteSettings.Name} - could not set Configuration Value: {field.Name}. Error: {ex.Message}");
                         }
                     }
                     else
+                    {
                         SetUserConfigurationValue(field, attrs[0] as CategoryAttribute);
+                    }
                 }
             }
         }
@@ -185,7 +197,7 @@ namespace OnlineVideos.Sites
         /// </summary>
         /// <param name="video">The <see cref="VideoInfo"/> from the list of displayed videos that were returned by this instance previously.</param>
         /// <returns>A valid url or filename.</returns>
-        public virtual String GetVideoUrl(VideoInfo video)
+        public virtual string GetVideoUrl(VideoInfo video)
         {
             return video.VideoUrl;
         }
@@ -197,9 +209,9 @@ namespace OnlineVideos.Sites
         /// </summary>
         /// <param name="video">The <see cref="VideoInfo"/> object, for which to get a list of urls.</param>
         /// <returns></returns>
-        public virtual List<String> GetMultipleVideoUrls(VideoInfo video, bool inPlaylist = false)
+        public virtual List<string> GetMultipleVideoUrls(VideoInfo video, bool inPlaylist = false)
         {
-            List<String> urls = new List<String> { GetVideoUrl(video) };
+            List<string> urls = new List<string> { GetVideoUrl(video) };
             return urls;
         }
 
@@ -303,24 +315,37 @@ namespace OnlineVideos.Sites
         public virtual string GetFileNameForDownload(VideoInfo video, Category category, string url)
         {
             if (string.IsNullOrEmpty(url)) // called for adding to favorites
-                return video.Title;
-            else // called for downloading
             {
-                Uri uri = new Uri(url);
-                string extension = System.IO.Path.GetExtension(uri.LocalPath.Trim(new char[] { '/' }));
-                if (extension == string.Empty) extension = System.IO.Path.GetExtension(url);
-                if (extension == ".f4v" || extension == ".fid") extension = ".flv";
-
-                if (string.IsNullOrEmpty(extension) || !OnlineVideoSettings.Instance.VideoExtensions.ContainsKey(extension))
-                {
-                    if (uri.Scheme.StartsWith("rtmp")) // downloading via rtmp always creates a flv file
-                        extension = ".flv";
-                    else
-                        extension = ".mp4";// Randomly chosen fallback
-                }
-                string safeName = Helpers.FileUtils.GetSaveFilename(video.Title);
-                return safeName + extension;
+                return video.Title;
             }
+
+            // called for downloading
+            Uri uri = new Uri(url);
+            string extension = Path.GetExtension(uri.LocalPath.Trim('/'));
+            if (extension == string.Empty)
+            {
+                extension = Path.GetExtension(url);
+            }
+
+            if (extension == ".f4v" || extension == ".fid")
+            {
+                extension = ".flv";
+            }
+
+            if (string.IsNullOrEmpty(extension) || !OnlineVideoSettings.Instance.VideoExtensions.ContainsKey(extension))
+            {
+                // downloading via rtmp always creates a flv file
+                if (uri.Scheme.StartsWith("rtmp", StringComparison.OrdinalIgnoreCase))
+                {
+                    extension = ".flv";
+                }
+                else
+                {
+                    extension = ".mp4"; // Randomly chosen fallback
+                }
+            }
+            string safeName = Helpers.FileUtils.GetSaveFilename(video.Title);
+            return safeName + extension;
         }
 
         /// <summary>
@@ -331,13 +356,28 @@ namespace OnlineVideos.Sites
         /// <returns>true if the url points to a video that can be played with directshow.</returns>
         public virtual bool IsPossibleVideo(string fsUrl)
         {
-            if (string.IsNullOrEmpty(fsUrl)) return false; // empty string is not a video
-            if (fsUrl.StartsWith("rtsp://")) return false; // rtsp protocol not supported yet
-            string extensionFile = System.IO.Path.GetExtension(fsUrl).ToLower();
+            if (string.IsNullOrEmpty(fsUrl))
+            {
+                return false; // empty string is not a video
+            }
+
+            if (fsUrl.StartsWith("rtsp://", StringComparison.Ordinal))
+            {
+                return false; // rtsp protocol not supported yet
+            }
+
+            string extensionFile = Path.GetExtension(fsUrl);
             bool isVideo = OnlineVideoSettings.Instance.VideoExtensions.ContainsKey(extensionFile);
             if (!isVideo)
             {
-                foreach (string anExt in OnlineVideoSettings.Instance.VideoExtensions.Keys) if (fsUrl.Contains(anExt)) { isVideo = true; break; }
+                foreach (string anExt in OnlineVideoSettings.Instance.VideoExtensions.Keys)
+                {
+                    if (fsUrl.Contains(anExt))
+                    {
+                        isVideo = true;
+                        break;
+                    }
+                }
             }
             return isVideo;
         }

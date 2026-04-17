@@ -170,11 +170,10 @@ namespace OnlineVideos
 
             // build a CRC of the url and all headers + proxy + cookies for caching
             string requestCRC = Helpers.EncryptionUtils.CalculateCRC32(
-                string.Format("{0}{1}{2}{3}",
-                uri,
-                headers != null ? string.Join("&", (from item in headers.AllKeys select string.Format("{0}={1}", item, headers[item])).ToArray()) : "",
-                proxy != null ? proxy.GetProxy(uri).AbsoluteUri : "",
-                cookies != null ? cookies.GetCookieHeader(uri) : ""));
+                $"{uri}"
+                + (headers != null ? string.Join("&", Array.ConvertAll(headers.AllKeys, k => $"{k}={headers[k]}")) : "")
+                + (proxy != null ? proxy.GetProxy(uri).AbsoluteUri : "")
+                + (cookies != null ? cookies.GetCookieHeader(uri) : ""));
 
             // try cache first
             string cachedData = cache ? Instance[requestCRC] : null;
@@ -243,7 +242,7 @@ namespace OnlineVideos
                 Stream responseStream = response.GetResponseStream();
 
                 Encoding responseEncoding = Encoding.UTF8;
-                if (!forceUTF8 && encoding == null && response.CharacterSet != null && !String.IsNullOrEmpty(response.CharacterSet.Trim()))
+                if (!forceUTF8 && encoding == null && response.CharacterSet != null && !string.IsNullOrEmpty(response.CharacterSet.Trim()))
                 {
                     responseEncoding = Encoding.GetEncoding(response.CharacterSet.Trim(new char[] { ' ', '"' }));
                 }
@@ -271,10 +270,7 @@ namespace OnlineVideos
             }
             finally
             {
-                if (response != null)
-                {
-                    ((IDisposable)response).Dispose();
-                }
+                (response as IDisposable)?.Dispose();
 
                 if (allowUnsafeHeader)
                 {
