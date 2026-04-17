@@ -54,6 +54,29 @@ namespace OnlineVideos.Sites
 
         #region Get Data
 
+        // Pre-compiled regexes — patterns are invariant, so compile once per process.
+        private static readonly Regex _rxAuthUrlJson  = new Regex(@"""authURL"":""(?<authURL>[^""]*)",              RegexOptions.Compiled);
+        private static readonly Regex _rxAuthUrlForm  = new Regex(@"name=""authURL""\s*?value=""(?<authURL>[^""]*)", RegexOptions.Compiled);
+        private static readonly Regex _rxI18nBrowse   = new Regex(@"""header\.browse"":""(?<val>[^""]*)",           RegexOptions.Compiled);
+        private static readonly Regex _rxI18nMyList   = new Regex(@"""navitem\.my\.list"":""(?<val>[^""]*)",        RegexOptions.Compiled);
+        private static readonly Regex _rxI18nHome     = new Regex(@"""navitem\.home"":""(?<val>[^""]*)",            RegexOptions.Compiled);
+        private static readonly Regex _rxI18nChars    = new Regex(@"""navitem\.characters"":""(?<val>[^""]*)",      RegexOptions.Compiled);
+        private static readonly Regex _rxI18nContWatch= new Regex(@"""billboard\.actions\.continueWatching"":""(?<val>[^""]*)", RegexOptions.Compiled);
+        private static readonly Regex _rxI18nSubgenre = new Regex(@"""subgenres"":""(?<val>[^""]*)",                RegexOptions.Compiled);
+        private static readonly Regex _rxI18nTrailers = new Regex(@"""tab\.trailers"":""(?<val>[^""]*)",            RegexOptions.Compiled);
+        private static readonly Regex _rxI18nDetails  = new Regex(@"""tab\.show\.details"":""(?<val>[^""]*)",       RegexOptions.Compiled);
+        private static readonly Regex _rxI18nCreator  = new Regex(@"""details\.creator"":""[^""]*\{(?<val>[^\}]+?)\}\}", RegexOptions.Compiled);
+        private static readonly Regex _rxI18nDirector = new Regex(@"""details\.director"":""[^""]*\{(?<val>[^\}]+?)\}\}", RegexOptions.Compiled);
+        private static readonly Regex _rxI18nCast     = new Regex(@"""details\.cast"":""[^""]*\{(?<val>[^\}]+?)\}\}", RegexOptions.Compiled);
+        private static readonly Regex _rxI18nGenres   = new Regex(@"""details\.genres"":""(?<val>[^""]*)",          RegexOptions.Compiled);
+        private static readonly Regex _rxI18nShowIs   = new Regex(@"""details\.this\.show\.is"":""(?<val>[^""]*)",  RegexOptions.Compiled);
+        private static readonly Regex _rxI18nMovieIs  = new Regex(@"""details\.this\.movie\.is"":""(?<val>[^""]*)", RegexOptions.Compiled);
+        private static readonly Regex _rxI18nMoreLike = new Regex(@"""tab\.more\.like\.this"":""(?<val>[^""]*)",    RegexOptions.Compiled);
+        private static readonly Regex _rxI18nPlay     = new Regex(@"""billboard\.actions\.play"":""(?<val>[^""]*)", RegexOptions.Compiled);
+        private static readonly Regex _rxI18nListAdd  = new Regex(@"""my\.list\.add"":""(?<val>[^""]*)",            RegexOptions.Compiled);
+        private static readonly Regex _rxI18nListRem  = new Regex(@"""my\.list\.remove"":""(?<val>[^""]*)",         RegexOptions.Compiled);
+        private static readonly Regex _rxPreData      = new Regex(@"<pre>(?<data>[^<]*)</pre>",                     RegexOptions.Compiled);
+
         private string MyGetWebData(string url, string postData = null, string referer = null)
         {
             string data = webViewHelper.GetHtml(url, postData, referer, blockOtherRequests: false);
@@ -65,8 +88,7 @@ namespace OnlineVideos.Sites
             }
             //Side effects
             //AuthUrl
-            Regex rgx = new Regex(@"""authURL"":""(?<authURL>[^""]*)");
-            Match m = rgx.Match(data);
+            Match m = _rxAuthUrlJson.Match(data);
             bool tryToSetApiAndIds = false;
             if (m.Success)
             {
@@ -76,8 +98,7 @@ namespace OnlineVideos.Sites
             }
             else
             {
-                rgx = new Regex(@"name=""authURL""\s*?value=""(?<authURL>[^""]*)");
-                m = rgx.Match(data);
+                m = _rxAuthUrlForm.Match(data);
                 if (m.Success)
                 {
                     LatestAuthUrl = m.Groups["authURL"].Value;
@@ -88,146 +109,47 @@ namespace OnlineVideos.Sites
             if (tryToSetApiAndIds)
             {
                 SetApiAndIds(data);
-                tryToSetApiAndIds = false;
             }
 
             if (i18n == null)
             {
-                rgx = new Regex(@"""header.browse"":""(?<val>[^""]*)");
-                m = rgx.Match(data);
+                m = _rxI18nBrowse.Match(data);
                 if (m.Success)
                 {
                     i18n = new Dictionary<string, string>();
-                    i18n.Add("Browse", Regex.Unescape(m.Groups["val"].Value.Trim()));
-
-                    rgx = new Regex(@"""navitem.my.list"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("My List", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("My List", "My List");
-
-                    rgx = new Regex(@"""navitem.home"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Home", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Home", "Home");
-
-                    rgx = new Regex(@"""navitem.characters"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Characters", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Characters", "Characters");
-
-                    rgx = new Regex(@"""billboard.actions.continueWatching"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Continue Watching", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Continue Watching", "Continue Watching");
-
-                    rgx = new Regex(@"""subgenres"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Subgenres", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Subgenres", "Subgenres");
-
-                    rgx = new Regex(@"""tab.trailers"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Trailers", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Trailers", "Trailers");
-
-                    rgx = new Regex(@"""tab.show.details"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Details", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Details", "Details");
-
-                    rgx = new Regex(@"""details.creator"":""[^""]*\{(?<val>[^\}]+?)\}\}");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Creator", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Creator", "Creator");
-
-                    rgx = new Regex(@"""details.director"":""[^""]*\{(?<val>[^\}]+?)\}\}");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Director", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Director", "Director");
-
-                    rgx = new Regex(@"""details.cast"":""[^""]*\{(?<val>[^\}]+?)\}\}");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Cast", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Cast", "Cast");
-
-                    rgx = new Regex(@"""details.genres"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Genres", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Genres", "Genres");
-
-                    rgx = new Regex(@"""details.this.show.is"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("This show is", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("This show is", "This show is");
-
-                    rgx = new Regex(@"""details.this.movie.is"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("This movie is", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("This movie is", "This movie is");
-
-                    rgx = new Regex(@"""tab.more.like.this"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("More like this", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("More like this", "More like this");
-
-                    rgx = new Regex(@"""billboard.actions.play"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("Play", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("Play", "Play");
-
-                    rgx = new Regex(@"""my.list.add"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("My List Add", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("My List Add", "My List Add");
-
-                    rgx = new Regex(@"""my.list.remove"":""(?<val>[^""]*)");
-                    m = rgx.Match(data);
-                    if (m.Success)
-                        i18n.Add("My List Remove", Regex.Unescape(m.Groups["val"].Value.Trim()));
-                    else
-                        i18n.Add("My List Remove", "My List Remove");
-
+                    i18n.Add("Browse",            Regex.Unescape(m.Groups["val"].Value.Trim()));
+                    AddI18n(data, _rxI18nMyList,    "My List",             "My List");
+                    AddI18n(data, _rxI18nHome,      "Home",                "Home");
+                    AddI18n(data, _rxI18nChars,     "Characters",          "Characters");
+                    AddI18n(data, _rxI18nContWatch, "Continue Watching",   "Continue Watching");
+                    AddI18n(data, _rxI18nSubgenre,  "Subgenres",           "Subgenres");
+                    AddI18n(data, _rxI18nTrailers,  "Trailers",            "Trailers");
+                    AddI18n(data, _rxI18nDetails,   "Details",             "Details");
+                    AddI18n(data, _rxI18nCreator,   "Creator",             "Creator");
+                    AddI18n(data, _rxI18nDirector,  "Director",            "Director");
+                    AddI18n(data, _rxI18nCast,      "Cast",                "Cast");
+                    AddI18n(data, _rxI18nGenres,    "Genres",              "Genres");
+                    AddI18n(data, _rxI18nShowIs,    "This show is",        "This show is");
+                    AddI18n(data, _rxI18nMovieIs,   "This movie is",       "This movie is");
+                    AddI18n(data, _rxI18nMoreLike,  "More like this",      "More like this");
+                    AddI18n(data, _rxI18nPlay,      "Play",                "Play");
+                    AddI18n(data, _rxI18nListAdd,   "My List Add",         "My List Add");
+                    AddI18n(data, _rxI18nListRem,   "My List Remove",      "My List Remove");
                 }
             }
             return data;
         }
 
+        private void AddI18n(string data, Regex rx, string key, string fallback)
+        {
+            Match m = rx.Match(data);
+            i18n.Add(key, m.Success ? Regex.Unescape(m.Groups["val"].Value.Trim()) : fallback);
+        }
+
         private string GetPathData(string postData, bool useCallMethod = false)
         {
             string data = MyGetWebData(ShaktiApi + BuildId + "pathEvaluator" + "?withSize=true&materialize=true&model=harris&" + (useCallMethod ? "method=call" : "esn=www"), postData: postData);
-            Match m = Regex.Match(data, @"<pre>(?<data>[^<]*)</pre>");
+            Match m = _rxPreData.Match(data);
             if (m.Success)
             {
                 return m.Groups["data"].Value;
