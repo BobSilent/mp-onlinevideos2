@@ -48,11 +48,7 @@ namespace OnlineVideos.Sites.Ard
 
             var newToken = new ContinuationToken(continuationToken);
             newToken[_categoryLevel] = currentLevel + 1;
-            return new Result<IEnumerable<ArdCategoryInfoDto>>
-            {
-                ContinuationToken = newToken,
-                Value = categoryInfos
-            };
+            return new Result<IEnumerable<ArdCategoryInfoDto>>(categoryInfos, newToken);
         }
 
         private IEnumerable<ArdCategoryInfoDto> LoadCategoriesWithDetails(JObject json)

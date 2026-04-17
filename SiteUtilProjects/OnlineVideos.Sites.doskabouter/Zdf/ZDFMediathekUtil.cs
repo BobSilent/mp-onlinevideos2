@@ -52,8 +52,10 @@ namespace OnlineVideos.Sites.Zdf
         {
             base.Initialize(siteSettings);
 
-            // .net 4.0 SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)(0xc0 | 0x300 | 0xc00);
+            // Explicitly enable TLS 1.0/1.1/1.2 — required for some ZDF endpoints.
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                | SecurityProtocolType.Tls11
+                | SecurityProtocolType.Tls12;
 
             _apiTokenProvider = new ZdfApiTokenProvider(WebCache.Instance);
         }

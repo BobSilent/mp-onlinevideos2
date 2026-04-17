@@ -26,11 +26,7 @@ namespace OnlineVideos.Sites.Ard
             var detailUrls = VideoDeserializer.ParseTeasersUrl(json);
             var filmInfos = LoadVideosWithDetails(detailUrls);
 
-            return new Result<IEnumerable<ArdVideoInfoDto>>()
-            {
-                ContinuationToken = continuationToken,
-                Value = filmInfos
-            };
+            return new Result<IEnumerable<ArdVideoInfoDto>>(filmInfos, continuationToken);
         }
 
         private IEnumerable<ArdVideoInfoDto> LoadVideosWithDetails(IEnumerable<string> urls)
@@ -58,11 +54,7 @@ namespace OnlineVideos.Sites.Ard
             var json = WebClient.GetWebData<JToken>(url, cache: false, proxy: WebRequest.GetSystemWebProxy());
             var streamInfos = VideoStreamsDeserializer.ParseWidgets(json);
 
-            return new Result<IEnumerable<DownloadDetailsDto>>()
-            {
-                ContinuationToken = continuationToken,
-                Value = streamInfos
-            };
+            return new Result<IEnumerable<DownloadDetailsDto>>(streamInfos, continuationToken);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace OnlineVideos.Sites.Ard.Json
         protected static readonly string ELEMENT_IMAGE = "image";
         protected static readonly string ELEMENT_IMAGES = "images";
         protected static readonly string ELEMENT_ASPECT_16X9 = "aspect16x9";
-        protected static readonly string ELEMENT_ASPECT_4X3 = "aspect16x9";
+        protected static readonly string ELEMENT_ASPECT_4X3  = "aspect4x3";
 
 
         protected static readonly string ATTRIBUTE_ID = "id";

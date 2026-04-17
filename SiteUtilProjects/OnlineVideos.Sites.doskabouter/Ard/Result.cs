@@ -1,9 +1,14 @@
 ﻿namespace OnlineVideos.Sites.Ard
 {
-
-    public class Result<T> //where T : ArdInformationDtoBase
+    public class Result<T>
     {
-        public T Value { get; set; }
-        public ContinuationToken ContinuationToken { get; set; }
+        public Result(T value, ContinuationToken continuationToken)
+        {
+            Value = value;
+            ContinuationToken = continuationToken;
+        }
+
+        public T Value { get; private set; }
+        public ContinuationToken ContinuationToken { get; private set; }
     }
 }

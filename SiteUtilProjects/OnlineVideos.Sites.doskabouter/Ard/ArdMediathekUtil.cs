@@ -11,14 +11,6 @@ namespace OnlineVideos.Sites.Ard
         public static readonly string PLACEHOLDER_IMAGE_WIDTH = "{width}";
         public static readonly string IMAGE_WIDTH = "1024";
 
-        static ArdMediathekUtil()
-        {
-            //TODO Workaround
-            //ServicePointManager.Expect100Continue = false;
-            ServicePointManager.UseNagleAlgorithm = false;
-            ServicePointManager.DefaultConnectionLimit = 10;
-        }
-
         public override int DiscoverDynamicCategories()
         {
             Settings.Categories.Clear();

@@ -42,11 +42,7 @@ namespace OnlineVideos.Sites.Ard
 
             var newToken = new ContinuationToken(continuationToken);
             newToken[_categoryLevel] = currentLevel + 1;
-            return new Result<IEnumerable<ArdCategoryInfoDto>>
-            {
-                ContinuationToken = newToken,
-                Value = dayCategories
-            };
+            return new Result<IEnumerable<ArdCategoryInfoDto>>(dayCategories, newToken);
         }
 
 
@@ -99,11 +95,7 @@ namespace OnlineVideos.Sites.Ard
             var json = WebClient.GetWebData<JToken>(url, cache: false, proxy: WebRequest.GetSystemWebProxy());
             var filmInfos = VideoDeserializer.ParseChannels(json).ToList();
 
-            return new Result<IEnumerable<ArdVideoInfoDto>>()
-            {
-                ContinuationToken = continuationToken,
-                Value = filmInfos
-            };
+            return new Result<IEnumerable<ArdVideoInfoDto>>(filmInfos, continuationToken);
         }
     }
 }
