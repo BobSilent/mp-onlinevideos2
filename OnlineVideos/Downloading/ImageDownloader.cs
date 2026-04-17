@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OnlineVideos.Downloading
 {
@@ -34,7 +35,14 @@ namespace OnlineVideos.Downloading
             public SmoothingMode Smoothing;
         }
 
-        public static bool StopDownload { get; set; }
+        // Cancels in-progress GetImages / DownloadImages calls.
+        private static CancellationTokenSource _cts = new CancellationTokenSource();
+
+        /// <summary>Cancels any in-progress image download batch.</summary>
+        public static void StopDownloads()
+        {
+            _cts.Cancel();
+        }
 
         // Shared client for thumbnail downloads — reuses TCP connections across parallel download groups.
         private static readonly HttpClient _thumbClient = new HttpClient(
@@ -53,86 +61,95 @@ namespace OnlineVideos.Downloading
         };
 
         /// <summary>
-        /// Downloads images from the <see cref="SearchResultItem.Thumb"/> in a background thread 
+        /// Downloads images from the <see cref="SearchResultItem.Thumb"/> on thread-pool threads
         /// and sets the path of the downloaded image to the <see cref="SearchResultItem.ThumbnailImage"/>.
+        /// Up to 5 images are downloaded concurrently. Cancel by calling <see cref="StopDownloads"/>.
         /// </summary>
         /// <typeparam name="T">must be a <see cref="SearchResultItem"/></typeparam>
         /// <param name="items">list of <see cref="SearchResultItem"/>s to download images for</param>
         public static void GetImages<T>(IList<T> items) where T : SearchResultItem
         {
-            StopDownload = false;
-            // split the downloads in 5+ groups and do multithreaded downloading
-            int groupSize = (int)Math.Max(1, Math.Floor((double)items.Count / 5));
-            int groups = (int)Math.Ceiling((double)items.Count / groupSize);
-            for (int i = 0; i < groups; i++)
-            {
-                List<T> group = new List<T>();
-                for (int j = groupSize * i; j < groupSize * i + (groupSize * (i + 1) > items.Count ? items.Count - groupSize * i : groupSize); j++)
-                {
-                    group.Add(items[j]);
-                }
+            // Replace the token so a fresh call always starts uncanelled,
+            // even if a previous StopDownload was issued.
+            var oldCts = Interlocked.Exchange(ref _cts, new CancellationTokenSource());
+            oldCts.Dispose();
+            var token = _cts.Token;
 
-                new Thread(o => DownloadImages((List<T>)o))
+            Task.Run(() =>
+            {
+                try
                 {
-                    IsBackground = true,
-                    Name = "OVThumbs" + i
-                }.Start(group);
-            }
+                    Parallel.ForEach(
+                        items,
+                        new ParallelOptions { MaxDegreeOfParallelism = 5, CancellationToken = token },
+                        item => DownloadImageForItem(item, token));
+                }
+                catch (OperationCanceledException) { /* intentional stop */ }
+            });
         }
 
         /// <summary>
-        /// Downloads images from the <see cref="SearchResultItem.Thumb"/> in the current thread
-        /// and sets the path of the downloaded image to the <see cref="SearchResultItem.ThumbnailImage"/>.
+        /// Downloads images for all items in <paramref name="items"/> on the calling thread.
+        /// Called directly by <see cref="LatestVideosManager"/> for its own sequenced loop.
         /// </summary>
-        /// <typeparam name="T">must be a <see cref="SearchResultItem"/></typeparam>
-        /// <param name="items">list of <see cref="SearchResultItem"/>s to download images for</param>
-        public static void DownloadImages<T>(List<T> items) where T : SearchResultItem
+        public static void DownloadImages<T>(List<T> items, CancellationToken cancellationToken = default) where T : SearchResultItem
         {
             foreach (T item in items)
             {
-                if (StopDownload)
+                if (cancellationToken.IsCancellationRequested)
                 {
                     break;
                 }
 
-                if (string.IsNullOrEmpty(item.Thumb))
+                DownloadImageForItem(item, cancellationToken);
+            }
+        }
+
+        /// <summary>Downloads and assigns a thumbnail for a single item.</summary>
+        private static void DownloadImageForItem<T>(T item, CancellationToken cancellationToken) where T : SearchResultItem
+        {
+            if (cancellationToken.IsCancellationRequested || string.IsNullOrEmpty(item.Thumb))
+            {
+                return;
+            }
+
+            foreach (string url in item.Thumb.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (cancellationToken.IsCancellationRequested)
                 {
-                    continue;
+                    return;
                 }
 
-                foreach (string url in item.Thumb.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+                string imageLocation = string.Empty;
+
+                if (Uri.TryCreate(url, UriKind.Absolute, out Uri temp))
                 {
-                    string imageLocation = string.Empty;
-
-                    if (Uri.TryCreate(url, UriKind.Absolute, out Uri temp))
+                    if (temp.IsFile)
                     {
-                        if (temp.IsFile)
+                        if (File.Exists(url))
                         {
-                            if (File.Exists(url))
-                            {
-                                imageLocation = url;
-                            }
-                        }
-                        else
-                        {
-                            string thumbFile = string.IsNullOrEmpty(item.ThumbnailImage) ? Helpers.FileUtils.GetThumbFile(url) : item.ThumbnailImage;
-                            if (File.Exists(thumbFile))
-                            {
-                                imageLocation = thumbFile;
-                            }
-                            else if (DownloadAndCheckImage(url, thumbFile, item.ImageForcedAspectRatio))
-                            {
-                                imageLocation = thumbFile;
-                            }
+                            imageLocation = url;
                         }
                     }
-
-                    // stop with the first valid image
-                    if (imageLocation != string.Empty)
+                    else
                     {
-                        item.ThumbnailImage = imageLocation;
-                        break;
+                        string thumbFile = string.IsNullOrEmpty(item.ThumbnailImage) ? Helpers.FileUtils.GetThumbFile(url) : item.ThumbnailImage;
+                        if (File.Exists(thumbFile))
+                        {
+                            imageLocation = thumbFile;
+                        }
+                        else if (DownloadAndCheckImage(url, thumbFile, item.ImageForcedAspectRatio))
+                        {
+                            imageLocation = thumbFile;
+                        }
                     }
+                }
+
+                // stop with the first valid image
+                if (imageLocation != string.Empty)
+                {
+                    item.ThumbnailImage = imageLocation;
+                    break;
                 }
             }
         }
@@ -213,17 +230,28 @@ namespace OnlineVideos.Downloading
             try
             {
                 DateTime keepdate = DateTime.Now.AddDays(-maxAge);
-                FileInfo[] files = new DirectoryInfo(Path.Combine(OnlineVideoSettings.Instance.ThumbsDir, @"Cache\")).GetFiles();
-                Log.Info("Checking {0} thumbnails for age.", files.Length);
-                for (int i = 0; i < files.Length; i++)
+                string cacheDir = Path.Combine(OnlineVideoSettings.Instance.ThumbsDir, @"Cache\");
+
+                // Count first so we can report meaningful progress without loading all FileInfo into memory.
+                int total = 0;
+                foreach (var _ in Directory.EnumerateFiles(cacheDir))
                 {
-                    FileInfo f = files[i];
+                    total++;
+                }
+
+                Log.Info("Checking {0} thumbnails for age.", total);
+
+                int processed = 0;
+                foreach (string path in Directory.EnumerateFiles(cacheDir))
+                {
+                    var f = new FileInfo(path);
                     if (f.LastWriteTime <= keepdate)
                     {
                         f.Delete();
                         thumbsDeleted++;
                     }
-                    if (!progressCallback((byte)((float)i / files.Length * 100)))
+                    processed++;
+                    if (!progressCallback(total > 0 ? (byte)((float)processed / total * 100) : (byte)0))
                     {
                         break;
                     }
@@ -236,7 +264,7 @@ namespace OnlineVideos.Downloading
             finally
             {
                 Log.Info("Deleted {0} thumbnails.", thumbsDeleted);
-                progressCallback(Byte.MaxValue);
+                progressCallback(byte.MaxValue);
             }
         }
     }

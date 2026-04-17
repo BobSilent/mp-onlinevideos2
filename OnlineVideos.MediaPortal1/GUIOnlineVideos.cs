@@ -973,7 +973,7 @@ namespace OnlineVideos.MediaPortal1
                             }
                             break;
                         case State.videos:
-                            ImageDownloader.StopDownload = true;
+                            ImageDownloader.StopDownloads();
                             if (GUI_facadeView.SelectedListItem.Label == "..")
                             {
                                 ShowPreviousMenu();
@@ -1020,7 +1020,7 @@ namespace OnlineVideos.MediaPortal1
                     VideoInfo videoPressedPlayOn = (GUI_facadeView.SelectedListItem as OnlineVideosGuiListItem).Item as VideoInfo;
                     if (videoPressedPlayOn != null)
                     {
-                        ImageDownloader.StopDownload = true;
+                        ImageDownloader.StopDownloads();
 
                         currentFilter.Clear();
                         GUIPropertyManager.SetProperty("#OnlineVideos.filter", string.Empty);
@@ -1048,7 +1048,7 @@ namespace OnlineVideos.MediaPortal1
             else if (control == GUI_infoList && CurrentState == State.details &&
                 (actionType == Action.ActionType.ACTION_SELECT_ITEM || actionType == Action.ActionType.ACTION_MUSIC_PLAY || actionType == Action.ActionType.ACTION_PLAY))
             {
-                ImageDownloader.StopDownload = true;
+                ImageDownloader.StopDownloads();
                 if (GUI_infoList.SelectedListItemIndex == 0)
                 {
                     ShowPreviousMenu();
@@ -2029,7 +2029,7 @@ namespace OnlineVideos.MediaPortal1
 
         private void ShowPreviousMenu()
         {
-            ImageDownloader.StopDownload = true;
+            ImageDownloader.StopDownloads();
 
             if (CurrentState == State.sites)
             {
