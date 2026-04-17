@@ -3,20 +3,21 @@
     <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
     <RootNamespace>OnlineVideos.Sites</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>
+
+  <PropertyGroup>
+    <Title>OnlineVideos.Sites.brownard</Title>
+    <Product>OnlineVideos.Sites.brownard</Product>
+    <Copyright>Copyright ©  2010</Copyright>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\OnlineVideos\OnlineVideos.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <Reference Include="System.Web" />
   </ItemGroup>

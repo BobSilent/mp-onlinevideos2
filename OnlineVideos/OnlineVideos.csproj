@@ -2,28 +2,18 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug</OutputPath>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <OutputPath>bin\Release</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <StartAction>Program</StartAction>
-    <StartProgram>$(MediaPortalInstallPath)\mediaportal.exe</StartProgram>
-    <RemoteDebugEnabled>false</RemoteDebugEnabled>
-    <StartWorkingDirectory>$(MediaPortalInstallPath)</StartWorkingDirectory>
+    
+  <PropertyGroup>
+      <Title>OnlineVideos API</Title>
+      <Description>OnlineVideos Base Library</Description>
+      <Product>OnlineVideos</Product>
   </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Net.Http" />
@@ -60,7 +50,6 @@
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2277.86" />
-    <PackageReference Include="MSBuildTasks" Version="1.5.0.235" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
     <PackageReference Include="SubtitleDownloader" Version="3.1.4">
@@ -71,6 +60,7 @@
   <ItemGroup Label="Compile items now included by globbing that were not in the original project file">
     <Compile Remove="MPUrlSourceFilter\MPUrlSourceSplitterError.cs" />
   </ItemGroup>
+  
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)NuGetPackage\Content\" />
   </Target>

@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" Condition="'' != $([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+    
   <PropertyGroup>
     <PluginDestination>$(MediaPortalInstallPath)\plugins\Windows\</PluginDestination>
     <DataDestination>$(ProgramData)$(_MediaPortalSubPath)\</DataDestination>
   </PropertyGroup>
 
   <ItemGroup>
-    <PluginFiles Include="$(TargetDir)$(ProjectName).*" />
+    <PluginFiles Include="$(TargetDir)$(TargetName).*" />
     <APIFiles Include="$(TargetDir)OnlineVideos.dll" />
     <APIFiles Include="$(TargetDir)OnlineVideos.pdb" Condition=" '$(Configuration)' == 'Debug' "/>
-    <SiteUtilDllFiles Include="$(SolutionDir)Build\SiteUtilDlls\OnlineVideos.Sites.*.dll" />
-    <SiteUtilDllFiles Include="$(SolutionDir)Build\SiteUtilDlls\OnlineVideos.Sites.*.pdb" Condition=" '$(Configuration)' == 'Debug' "/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <LanguageFiles Include="$(SolutionDir)Language\OnlineVideos\*.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <SkinFiles Include="$(SolutionDir)Skins\**\*.*" />
-    <IconFiles Include="$(SolutionDir)SiteImages\**\*.*" />
+    <SiteUtilDllFiles Include="$(RepoRoot)Build\SiteUtilDlls\OnlineVideos.Sites.*.dll" />
+    <SiteUtilDllFiles Include="$(RepoRoot)Build\SiteUtilDlls\OnlineVideos.Sites.*.pdb" Condition=" '$(Configuration)' == 'Debug' "/>
+    <IconFiles Include="$(RepoRoot)SiteImages\**\*.*" />
+    <LanguageFiles Include="$(RepoRoot)Language\OnlineVideos\*.xml" />
+    <SkinFiles Include="$(RepoRoot)Skins\**\*.*" />
   </ItemGroup>
 
   <Target Name="BeforeBuild">

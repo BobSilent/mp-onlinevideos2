@@ -2,17 +2,18 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoWarn>MSB3270</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+
+  <PropertyGroup>
+    <Title>OnlineVideos MediaPortal1 GUI</Title>
+    <Product>OnlineVideos</Product>
+    <Description>OnlineVideos GUI FrontEnd for MediaPortal 1</Description>
   </PropertyGroup>
+    
   <ItemGroup>
     <Reference Include="AxInterop.WMPLib">
       <HintPath>$(MediaPortalInstallPath)\AxInterop.WMPLib.dll</HintPath>
@@ -140,9 +141,6 @@
     <Compile Update="Player\Vlc.DotNet\Vlc.DotNet.Forms\VlcControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="..\Build\Version.cs">
-      <Link>Properties\Version.cs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OnlineVideos.png" />
@@ -152,10 +150,11 @@
     <ProjectReference Include="..\OnlineVideos\OnlineVideos.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="build.targets">
+    <None Update="Directory.Build.targets">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+    
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2277.86" />
   </ItemGroup>

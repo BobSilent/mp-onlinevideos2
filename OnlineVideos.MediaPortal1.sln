@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.4.11513.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{28BEFB3A-C1A1-427F-B156-83157F30EA3C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SiteUtilProjects", "SiteUtilProjects", "{6B73364F-8850-4FD8-87DF-CA29321DF24E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineVideos", "OnlineVideos\OnlineVideos.csproj", "{E0D9D390-CDD6-4B98-86F3-6EB04A958882}"
@@ -25,16 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineVideos.MediaPortal1",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineVideos.Sites.brownard", "SiteUtilProjects\OnlineVideos.Sites.brownard\OnlineVideos.Sites.brownard.csproj", "{1DCE9E7A-4B28-4B38-B0F7-909E1F089F4A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2D9515FA-7881-4258-AE09-20F1A3693979}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{ECC6D240-F5F0-4C9C-A08C-21E85E36307A}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
-		.build\MSBuild.Community.Tasks.dll = .build\MSBuild.Community.Tasks.dll
-		.build\MSBuild.Community.Tasks.targets = .build\MSBuild.Community.Tasks.targets
+		Directory.Build.targets = Directory.Build.targets
 		Build\Version.txt = Build\Version.txt
 	EndProjectSection
 EndProject

@@ -1,0 +1,40 @@
+<Project>
+
+    <PropertyGroup>
+        <VersionFile Condition=" '$(VersionFile)' == '' ">Build\Version.txt</VersionFile>
+
+        <BuildDependsOn>
+            SetAssemblyVersion;
+            $(BuildDependsOn)
+        </BuildDependsOn>
+    </PropertyGroup>
+
+    <Target Name="SetAssemblyVersion">
+        <PropertyGroup>
+            <Version Condition="Exists('$(VersionFile)')">$([System.IO.File]::ReadAllText($(VersionFile)))</Version>
+            <Version Condition="'$(Version)' == ''">0.0.1.0</Version>
+        </PropertyGroup>
+
+        <Exec
+          Command="git show -s --format=%%H"
+          ConsoleToMSBuild="True"
+          IgnoreExitCode="False">
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitHash"/>
+        </Exec>
+
+        <Exec
+            Command="git branch --show-current"
+            ConsoleToMSBuild="True"
+            IgnoreExitCode="False">
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitBranch"/>
+        </Exec>
+
+        <Message Text="Setting Version: $(Version) (git $(GitBranch) $(GitHash))" Importance="high" />
+        <PropertyGroup>
+            <InformationalVersion>$(Version) (git $(GitBranch) $(GitHash))</InformationalVersion>
+            <AssemblyVersion>$(Version)</AssemblyVersion>
+            <FileVersion>$(Version)</FileVersion>
+        </PropertyGroup>
+    </Target>
+
+</Project>

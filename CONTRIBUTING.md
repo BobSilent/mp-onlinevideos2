@@ -4,7 +4,8 @@
 
 The repository includes a `Directory.Build.props` file in the root that configures build properties. 
 
-If MediaPortal is not installed in the default location on your system, you'll need to specify the correct path by setting the `MediaPortalInstallDir` property.
+If MediaPortal is not installed in the default location on your system, you'll need to specify 
+the correct path by setting the `MediaPortalInstallDir` property.
 You can do this by adapting the `Directory.Build.props`:
 ```xml
 <Project>
@@ -13,6 +14,14 @@ You can do this by adapting the `Directory.Build.props`:
   </PropertyGroup>
 </Project>
 ```
+
+This is required for discovering some of the dependencies, and for the build to succeed.
+If you have MediaPortal installed in the default location, you can leave this as is.
+
+If you want to automatically copy the build results to the MediaPortal installation path,
+you can set the `CopyBuildResultToMediaPortalInstallPath` property to `true` via commandline when building or 
+e.g. in the root `Directory.Build.props` file.
+
 
 ## General contribution guidelines
 

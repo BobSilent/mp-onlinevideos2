@@ -3,18 +3,17 @@
     <TargetFramework>net48</TargetFramework>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>OnlineVideos.ico</ApplicationIcon>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\</OutputPath>
+    
+  <PropertyGroup>
+    <Title>SiteParser</Title>
+    <Product>SiteParser</Product>
+    <Copyright>Copyright ©  2010</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <OutputPath>bin\</OutputPath>
-  </PropertyGroup>
+      
   <ItemGroup>
     <Reference Update="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

@@ -3,35 +3,18 @@
     <TargetFramework>net48</TargetFramework>
     <OutputType>Library</OutputType>
     <RootNamespace>OnlineVideos.Sites</RootNamespace>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <LangVersion>latest</LangVersion>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>      
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+
+  <PropertyGroup>
+    <Title>OnlineVideos.Sites.doskabouter</Title>
+    <Description>SiteUtils for OnlineVideos by doskabouter</Description>
+    <Product>OnlineVideos.Sites.doskabouter</Product>
+    <Copyright>Copyright ©  2010</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+    
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\OnlineVideos\bin\$(Configuration)\Newtonsoft.Json.dll</HintPath>
@@ -39,11 +22,7 @@
     </Reference>
     <Reference Include="System.Web" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\Build\Version.cs">
-      <Link>Properties\Version.cs</Link>
-    </Compile>
-  </ItemGroup>
+    
   <ItemGroup>
     <ProjectReference Include="..\..\OnlineVideos\OnlineVideos.csproj" />
   </ItemGroup>

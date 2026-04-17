@@ -30,9 +30,9 @@ namespace OnlineVideos
                     _translations = new Dictionary<string, string>();
                     Type transType = typeof(Translation);
                     FieldInfo[] fields = transType.GetFields(BindingFlags.Public | BindingFlags.Instance);
-                    foreach (FieldInfo field in fields)
+                    foreach (FieldInfo @field in fields)
                     {
-                        _translations.Add(field.Name, field.GetValue(this).ToString());
+                        _translations.Add(@field.Name, @field.GetValue(this).ToString());
                     }
                 }
                 return _translations;

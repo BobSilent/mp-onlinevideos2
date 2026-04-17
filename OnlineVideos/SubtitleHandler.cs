@@ -1,5 +1,4 @@
 ﻿extern alias OVSubs;
-using SubtitleDownloader_Core = OVSubs::SubtitleDownloader.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +6,8 @@ using System.Reflection;
 using System.Linq;
 using System.IO;
 using System.Threading;
+
+using OVSubs::SubtitleDownloader.Core;
 
 namespace OnlineVideos.Subtitles
 {
@@ -98,7 +99,7 @@ namespace OnlineVideos.Subtitles
         // keep all references to subtitledownloader in separate methods, so that methods that are called from siteutil don't throw an ecxeption
         private bool tryLoad(string className)
         {
-            Assembly subAssembly = Assembly.GetAssembly(typeof(SubtitleDownloader_Core.ISubtitleDownloader));
+            Assembly subAssembly = Assembly.GetAssembly(typeof(ISubtitleDownloader));
             Type tt = subAssembly.GetType(String.Format("SubtitleDownloader.Implementations.{0}.{0}Downloader", className), false, true);
             if (tt == null)
             {
@@ -107,7 +108,7 @@ namespace OnlineVideos.Subtitles
             }
             else
             {
-                sdObject = (SubtitleDownloader_Core.ISubtitleDownloader)Activator.CreateInstance(tt);
+                sdObject = (ISubtitleDownloader)Activator.CreateInstance(tt);
                 Log.Debug("Subtitlehandler " + sdObject.ToString() + " successfully created");
                 return true;
             }
@@ -115,21 +116,21 @@ namespace OnlineVideos.Subtitles
 
         private void setSubtitleText(VideoInfo video)
         {
-            SubtitleDownloader_Core.ISubtitleDownloader sd = (SubtitleDownloader_Core.ISubtitleDownloader)sdObject;
-            List<SubtitleDownloader_Core.Subtitle> results;
+            ISubtitleDownloader sd = (ISubtitleDownloader)sdObject;
+            List<Subtitle> results;
             var it = video.TrackingInfo;
             if (it.VideoKind == VideoKind.Movie)
             {
                 if (!String.IsNullOrEmpty(it.ID_IMDB))
                 {
                     var imdbNumber = it.ID_IMDB.StartsWith("tt") ? it.ID_IMDB.Substring(2) : it.ID_IMDB;
-                    var qu = new SubtitleDownloader_Core.ImdbSearchQuery(imdbNumber);
+                    var qu = new ImdbSearchQuery(imdbNumber);
                     qu.LanguageCodes = languagePrios.Keys.ToArray();
                     results = sd.SearchSubtitles(qu);
                 }
                 else
                 {
-                    SubtitleDownloader_Core.SearchQuery qu = new SubtitleDownloader_Core.SearchQuery(it.Title) { Year = (int)it.Year };
+                    var qu = new SearchQuery(it.Title) { Year = (int)it.Year };
                     qu.Year = (int)it.Year;
                     qu.LanguageCodes = languagePrios.Keys.ToArray();
                     results = sd.SearchSubtitles(qu);
@@ -137,7 +138,7 @@ namespace OnlineVideos.Subtitles
             }
             else
             {
-                SubtitleDownloader_Core.EpisodeSearchQuery qu = new SubtitleDownloader_Core.EpisodeSearchQuery(it.Title, (int)it.Season, (int)it.Episode, it.ID_IMDB);
+                var qu = new EpisodeSearchQuery(it.Title, (int)it.Season, (int)it.Episode, it.ID_IMDB);
                 qu.LanguageCodes = languagePrios.Keys.ToArray();
                 results = sd.SearchSubtitles(qu);
             }
@@ -146,7 +147,7 @@ namespace OnlineVideos.Subtitles
             {
                 int nTodo = 5;
                 video.SubtitleTexts = new SubtitleList();
-                foreach (SubtitleDownloader_Core.Subtitle sub in results)
+                foreach (Subtitle sub in results)
                 {
                     if (nTodo <= 0)
                         Log.Debug("Skipping subtitle " + sub.ProgramName + " " + sub.LanguageCode);
@@ -191,8 +192,8 @@ namespace OnlineVideos.Subtitles
         {
             List<String> sources = new List<String>();
 
-            Assembly subAssembly = Assembly.GetAssembly(typeof(SubtitleDownloader_Core.ISubtitleDownloader));
-            Type ISubType = typeof(SubtitleDownloader_Core.ISubtitleDownloader);
+            Assembly subAssembly = Assembly.GetAssembly(typeof(ISubtitleDownloader));
+            Type ISubType = typeof(ISubtitleDownloader);
             foreach (Type t in subAssembly.GetTypes())
                 if (t != ISubType && ISubType.IsAssignableFrom(t) && t.Name.EndsWith("Downloader"))
                     sources.Add(t.Name.Substring(0, t.Name.Length - 10));

@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "OnlineVideos": {
+      "commandName": "Project"
+    },
+    "MediaPortal": {
+      "commandName": "Executable",
+      "executablePath": "$(MediaPortalInstallPath)\\mediaportal.exe",
+      "workingDirectory": "$(MediaPortalInstallPath)"
+    }
+  }
+}
