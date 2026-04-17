@@ -6,20 +6,14 @@ using MediaPortal.Database;
 
 namespace OnlineVideos.MediaPortal1
 {
-    public class FavoritesDatabase : MarshalByRefObject, IFavoritesDatabase
+    public class FavoritesDatabase : MarshalByRefObject, IFavoritesDatabase, IDisposable
     {
         private SQLiteClient m_db;
 
-        private static FavoritesDatabase _Instance;
+        private static readonly Lazy<FavoritesDatabase> _lazy =
+            new Lazy<FavoritesDatabase>(() => new FavoritesDatabase());
 
-        public static FavoritesDatabase Instance
-        {
-            get
-            {
-                if (_Instance == null) _Instance = new FavoritesDatabase();
-                return _Instance;
-            }
-        }
+        public static FavoritesDatabase Instance => _lazy.Value;
 
         private FavoritesDatabase()
         {
@@ -259,7 +253,7 @@ namespace OnlineVideos.MediaPortal1
             return m_db.ChangedRows() > 0;
         }
 
-        string EscapeString(string input)
+        private string EscapeString(string input)
         {
             return input.Replace("'", "''");
         }

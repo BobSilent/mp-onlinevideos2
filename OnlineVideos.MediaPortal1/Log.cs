@@ -23,21 +23,14 @@ namespace OnlineVideos.MediaPortal1
         #endregion
 
         #region Singleton
-        private static Log _Instance = null;
-        public static Log Instance
-        {
-            get
-            {
-                if (_Instance == null) _Instance = new Log();
-                return _Instance;
-            }
-        }
+        private static readonly Lazy<Log> _lazy = new Lazy<Log>(() => new Log());
+        public static Log Instance => _lazy.Value;
         #endregion
 
-        log4net.Core.Level minLevel = log4net.Core.Level.All;
+        private log4net.Core.Level minLevel = log4net.Core.Level.All;
         public log4net.Core.Level LogLevel { get { return minLevel; } }
 
-        log4net.ILog logger;
+        private log4net.ILog logger;
 
         private Log()
         {

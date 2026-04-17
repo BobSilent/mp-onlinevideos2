@@ -7,24 +7,14 @@ namespace OnlineVideos.MediaPortal1
 {
     internal class Gui2UtilConnector
     {
-        # region Singleton
-        protected Gui2UtilConnector()
+        #region Singleton
+        private Gui2UtilConnector()
         {
             _timeoutTimer.Elapsed += TaskWatcherTimerElapsed;
         }
-        protected static Gui2UtilConnector instance = null;
-        internal static Gui2UtilConnector Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new Gui2UtilConnector();
-                }
-
-                return instance;
-            }
-        }
+        private static readonly Lazy<Gui2UtilConnector> _lazy =
+            new Lazy<Gui2UtilConnector>(() => new Gui2UtilConnector());
+        internal static Gui2UtilConnector Instance => _lazy.Value;
         #endregion
 
         internal bool IsBusy { get; private set; }
@@ -42,12 +32,12 @@ namespace OnlineVideos.MediaPortal1
             AutoReset = false 
         };
 
-        public void StopBackgroundTask()
+        internal void StopBackgroundTask()
         {
             StopBackgroundTask(true);
         }
 
-        void StopBackgroundTask(bool byUserRequest)
+        private void StopBackgroundTask(bool byUserRequest)
         {
             if (IsBusy && _currentTaskSuccess == null && _backgroundThread != null && _backgroundThread.IsAlive)
             {
@@ -58,7 +48,7 @@ namespace OnlineVideos.MediaPortal1
             }
         }
 
-        void TaskWatcherTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void TaskWatcherTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             StopBackgroundTask(false);
         }
@@ -147,7 +137,7 @@ namespace OnlineVideos.MediaPortal1
             }
         }
 
-        void ExecuteTaskResultHandler()
+        private void ExecuteTaskResultHandler()
         {
             if (!IsBusy)
             {

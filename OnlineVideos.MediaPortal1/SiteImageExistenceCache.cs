@@ -9,7 +9,7 @@ namespace OnlineVideos.MediaPortal1
 	/// </summary>
 	internal static class SiteImageExistenceCache
 	{
-		static Dictionary<string, string> cachedImageForSite = new Dictionary<string, string>();
+		static readonly Dictionary<string, string> cachedImageForSite = new Dictionary<string, string>();
 
 		internal static string GetImageForSite(string siteName, string utilName = "", string type = "Banner", bool logIfNotfound = true)
 		{
