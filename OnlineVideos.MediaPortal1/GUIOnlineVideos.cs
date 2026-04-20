@@ -816,8 +816,8 @@ namespace OnlineVideos.MediaPortal1
                     SelectedSite = null;
                     selectedCategory = null;
                     selectedVideo = null;
-                    currentVideoList = new List<VideoInfo>();
-                    currentTrailerList = new List<DetailVideoInfo>();
+                    currentVideoList.Clear();
+                    currentTrailerList.Clear();
                     currentNavigationContextSwitch = null;
                     loadParamInfo = null;
                     DisplayGroups();
@@ -833,8 +833,8 @@ namespace OnlineVideos.MediaPortal1
                     // reset to sites view
                     selectedCategory = null;
                     selectedVideo = null;
-                    currentVideoList = new List<VideoInfo>();
-                    currentTrailerList = new List<DetailVideoInfo>();
+                    currentVideoList.Clear();
+                    currentTrailerList.Clear();
                     currentNavigationContextSwitch = null;
                     loadParamInfo = null;
                     DisplaySites();
@@ -1697,13 +1697,13 @@ namespace OnlineVideos.MediaPortal1
             Display_SearchResults(query);
         }
 
+        static readonly Regex _cleanExpressionRegex = new Regex("[,;!?'\"()]", RegexOptions.Compiled);
+
         private string CleanExpression(string expression)
         {
             // Clean searchexpression
             expression = expression.Replace(Environment.NewLine, " ").Replace("\n", " ").Replace("\n\r", " ");
-            Regex oRegexReplace = new Regex("[,;!?'\"()]");
-            MatchCollection oMatches = oRegexReplace.Matches(expression);
-            expression = oMatches.Cast<Match>().Aggregate(expression, (current, match) => current.Replace(match.Value, oRegexReplace.Replace(match.Value, string.Empty))).Replace("  ", " ").Trim();
+            expression = _cleanExpressionRegex.Replace(expression, string.Empty).Replace("  ", " ").Trim();
             return expression;
         }
 
@@ -1973,12 +1973,13 @@ namespace OnlineVideos.MediaPortal1
             // add the items
             Dictionary<string, bool> imageHash = new Dictionary<string, bool>();
             currentFilter.StartMatching();
+            string videosVKfilterLower = videosVKfilter.ToLower();
 
             foreach (VideoInfo videoInfo in currentVideoList)
             {
                 videoInfo.CleanDescriptionAndTitle();
                 if (!currentFilter.Matches(videoInfo.Title) || FilterOut(videoInfo.Title) || FilterOut(videoInfo.Description)) continue;
-                if (!string.IsNullOrEmpty(videosVKfilter) && !videoInfo.Title.ToLower().Contains(videosVKfilter.ToLower())) continue;
+                if (!string.IsNullOrEmpty(videosVKfilter) && !videoInfo.Title.ToLower().Contains(videosVKfilterLower)) continue;
 
                 OnlineVideosGuiListItem listItem = new OnlineVideosGuiListItem(videoInfo)
                 {
@@ -2570,6 +2571,7 @@ namespace OnlineVideos.MediaPortal1
         {
             var result = new PlayList() { IsPlayAll = true, Random = random };
             bool startVideoFound = startWith == null;
+            string videosVKfilterLower = videosVKfilter.ToLower();
             foreach (VideoInfo video in videos)
             {
                 // when not in details view of a site with details view only include videos that don't have details
@@ -2577,7 +2579,7 @@ namespace OnlineVideos.MediaPortal1
 
                 // filter out by the current filter
                 if (!currentFilter.Matches(video.Title) || FilterOut(video.Title) || FilterOut(video.Description)) continue;
-                if (!string.IsNullOrEmpty(videosVKfilter) && !video.Title.ToLower().Contains(videosVKfilter.ToLower())) continue;
+                if (!string.IsNullOrEmpty(videosVKfilter) && !video.Title.ToLower().Contains(videosVKfilterLower)) continue;
 
                 if (!startVideoFound && video != startWith) continue;
                 else startVideoFound = true;
