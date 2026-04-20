@@ -5,7 +5,7 @@
     <RootNamespace>OnlineVideos.Sites</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>      
+    <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>

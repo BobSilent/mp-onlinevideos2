@@ -61,7 +61,7 @@
     <Compile Remove="MPUrlSourceFilter\MPUrlSourceSplitterError.cs" />
   </ItemGroup>
   
-  <Target Name="AfterBuild">
+  <Target Name="CustomAfterBuild" AfterTargets="Build">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)NuGetPackage\Content\" />
   </Target>
 </Project>

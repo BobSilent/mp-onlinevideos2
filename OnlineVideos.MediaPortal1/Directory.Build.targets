@@ -18,11 +18,11 @@
     <SkinFiles Include="$(RepoRoot)Skins\**\*.*" />
   </ItemGroup>
 
-  <Target Name="BeforeBuild">
+  <Target Name="CustomAfterBuild" AfterTargets="Build">
     <Error Condition="'$(MediaPortalInstallPath)' == ''" Text="MediaPortalInstallPath is not set." />
   </Target>
 
-  <Target Name="AfterBuild" Condition="'$(CopyBuildResultToMediaPortalInstallPath)' == 'True'">
+  <Target Name="CustomAfterBuild" AfterTargets="Build" Condition="'$(CopyBuildResultToMediaPortalInstallPath)' == 'True'">
     <Copy SourceFiles="@(PluginFiles)" DestinationFolder="$(PluginDestination)" />
     <Copy SourceFiles="@(APIFiles)" DestinationFolder="$(PluginDestination)OnlineVideos\" />
     <Copy SourceFiles="@(SiteUtilDllFiles)" DestinationFolder="$(PluginDestination)OnlineVideos\" />

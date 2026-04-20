@@ -5,6 +5,8 @@
     <RootNamespace>OnlineVideos.Sites</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <OutputPath>..\..\Build\SiteUtilDlls\</OutputPath>
+    <DebugType Condition="'$(Configuration)' != 'Release'">full</DebugType>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -25,7 +27,7 @@
   </ItemGroup>
   <UsingTask TaskName="ILMerge.MSBuild.Tasks.ILMerge" AssemblyFile="$(PkgILMerge_MSBuild_Tasks)\tools\ILMerge.MSBuild.Tasks.dll" />
   <ItemGroup>
-    <MergeAsm Include="$(TargetPath)" />
+    <MergeAsm Include="$(IntermediateOutputPath)$(TargetFileName)" />
     <MergeAsm Include="$(TargetDir)Google.Apis.Auth.dll" />
     <MergeAsm Include="$(TargetDir)Google.Apis.Core.dll" />
     <MergeAsm Include="$(TargetDir)Google.Apis.dll" />
@@ -38,18 +40,17 @@
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.70.0.3847" />
     <PackageReference Include="ILMerge.MSBuild.Tasks" Version="1.0.0.3" />
   </ItemGroup>
-  <Target Name="AfterClean">
-    <Delete Files="..\..\Build\SiteUtilDlls\$(TargetFileName)" />
-    <Delete Files="..\..\Build\SiteUtilDlls\$(TargetName).pdb" />
-  </Target>
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
+
+  <Target Name="CustomAfterBuild" AfterTargets="Build">
     <ItemGroup>
       <ExternalPdbs Include="$(TargetDir)Google*.pdb" />
     </ItemGroup>
     <Delete Files="@(ExternalPdbs)" ContinueOnError="true" />
-    <ILMerge InputAssemblies="@(MergeAsm)" LibraryPath="..\..\OnlineVideos\bin\$(Configuration)" DebugInfo="true" OutputFile="..\..\Build\SiteUtilDlls\$(TargetFileName)" />
+    <ILMerge 
+        InputAssemblies="@(MergeAsm)"
+        LibraryPath="$(TargetDir)"
+        DebugInfo="$('$(Configuration)' != 'Release')"
+        Internalize="true"
+        OutputFile="$(TargetPath)" />
   </Target>
-  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''" />
 </Project>
