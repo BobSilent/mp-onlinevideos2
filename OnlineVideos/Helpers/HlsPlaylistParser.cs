@@ -137,7 +137,7 @@ namespace OnlineVideos.Helpers
             using (StringReader reader = new StringReader(playlist.Trim()))
             {
                 string line = reader.ReadLine();
-                if (!line.StartsWith("#EXTM3U", StringComparison.InvariantCultureIgnoreCase))
+                if (line == null || !line.StartsWith("#EXTM3U", StringComparison.InvariantCultureIgnoreCase))
                 {
                     Log.Warn("HlsPlaylistParser: Not a valid m3u8 file");
                     return;
@@ -181,6 +181,7 @@ namespace OnlineVideos.Helpers
                         bandwidth = 0;
                         width = 0;
                         height = 0;
+                        framerate = 0;
                     }
                 }
             }

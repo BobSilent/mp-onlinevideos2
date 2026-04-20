@@ -242,6 +242,7 @@ namespace OnlineVideos
                 {
                     Log.Debug(webEx.Message);
                     response = (HttpWebResponse)webEx.Response;
+                    if (response == null) return string.Empty;
                 }
                 Stream responseStream = response.GetResponseStream();
 
@@ -320,7 +321,7 @@ namespace OnlineVideos
                 HttpResponseMessage response;
                 try
                 {
-                    response = _httpClient.SendAsync(request).GetAwaiter().GetResult();
+                    response = _httpClient.SendAsync(request).ConfigureAwait(false).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
@@ -331,7 +332,7 @@ namespace OnlineVideos
                 using (response)
                 {
                     // Read raw bytes so we can apply encoding rules identical to the HttpWebRequest path.
-                    byte[] bytes = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                    byte[] bytes = response.Content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
                     Encoding responseEncoding = Encoding.UTF8;
                     if (!forceUTF8 && encoding == null)
@@ -386,7 +387,7 @@ namespace OnlineVideos
                         }
 
                         // _noRedirectClient has AllowAutoRedirect=false so we always get the immediate response.
-                        using (var response = _noRedirectClient.SendAsync(request).GetAwaiter().GetResult())
+                        using (var response = _noRedirectClient.SendAsync(request).ConfigureAwait(false).GetAwaiter().GetResult())
                         {
                             if (!allowAutoRedirect)
                             {
@@ -413,6 +414,10 @@ namespace OnlineVideos
 
             // Fallback: CookieContainer present — use HttpWebRequest to preserve session.
             HttpWebRequest hwRequest = WebRequest.Create(url) as HttpWebRequest;
+            if (hwRequest == null)
+            {
+                return url;
+            }
 
             string GetFinalUrl(WebResponse response)
             {
@@ -436,11 +441,6 @@ namespace OnlineVideos
 
             try
             {
-                if (hwRequest == null)
-                {
-                    return url;
-                }
-
                 SetRequestProperties(hwRequest, headers, false);
                 hwRequest.AllowAutoRedirect = allowAutoRedirect;
                 hwRequest.CookieContainer = cc;

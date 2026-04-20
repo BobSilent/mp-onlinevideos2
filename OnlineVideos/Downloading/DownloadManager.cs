@@ -50,7 +50,7 @@ namespace OnlineVideos.Downloading
                             item.Value.RemoveAt(index);
                             if (item.Value.Count == 0) _currentDownloadsQueuedPerSite.Remove(item.Key);
                             else return item.Key; // return the name of the site on which this list was queued if there are more lists to download
-                            break;
+                            break; // item found and removed — stop iterating
                         }
                     }
                 }
@@ -101,13 +101,13 @@ namespace OnlineVideos.Downloading
                 while (_currentDownloadsParallel.Count > 0)
                 {
                     var dl = _currentDownloadsParallel[0];
-                    dl.CurrentItem.Downloader.Abort();
+                    dl.CurrentItem?.Downloader?.Abort();
                     _currentDownloadsParallel.RemoveAt(0);
                 }
                 while (_currentDownloadsQueuedPerSite.Count > 0)
                 {
                     var dl = _currentDownloadsQueuedPerSite.First();
-                    dl.Value.First().CurrentItem.Downloader.Abort();
+                    dl.Value.First().CurrentItem?.Downloader?.Abort();
                     _currentDownloadsQueuedPerSite.Remove(dl.Key);
                 }
             }

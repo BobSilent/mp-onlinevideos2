@@ -56,8 +56,10 @@ namespace OnlineVideos.Sites
                 {
                     if (DateTime.Now - _lastOnlineVersionCheck > TimeSpan.FromHours(4)) // only check every 4 hours
                     {
-                        _lastOnlineVersionCheck = DateTime.Now;
                         XmlDocument xDoc = WebCache.Instance.GetWebData<XmlDocument>(UpdateXmlUrl, cache: false);
+                        // Stamp the check time only after a successful fetch so a transient
+                        // network failure doesn't suppress retries for the next 4 hours.
+                        _lastOnlineVersionCheck = DateTime.Now;
                         List<Version> versions = new List<Version>();
                         var versionNode = xDoc.SelectNodes("//PackageClass/GeneralInfo/Version");
                         if (versionNode != null)

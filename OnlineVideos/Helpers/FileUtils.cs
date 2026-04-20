@@ -72,20 +72,18 @@ namespace OnlineVideos.Helpers
             const int c_PeHeaderOffset = 60;
             const int c_LinkerTimestampOffset = 8;
             byte[] b = new byte[2048];
-            Stream s = null;
 
             try
             {
-                s = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                s.Read(b, 0, 2048);
+                using (Stream s = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    s.Read(b, 0, 2048);
+                }
             }
             catch (Exception e)
             {
                 Log.Error("Couldn't retrieve Linker Timestamp: {0}", e.ToString());
-            }
-            finally
-            {
-                s?.Close();
+                return DateTime.MinValue;
             }
 
             int i = BitConverter.ToInt32(b, c_PeHeaderOffset);
