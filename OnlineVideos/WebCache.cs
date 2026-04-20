@@ -154,10 +154,14 @@ namespace OnlineVideos
                 cache = false;
             }
 
-            if (headers == null)
+            // Create a local copy so we never mutate the caller's collection.
+            var localHeaders = new NameValueCollection();
+            if (headers != null)
             {
-                headers = new NameValueCollection();
+                localHeaders.Add(headers);
             }
+            headers = localHeaders;
+
             if (referer != null)
             {
                 headers.Add("referer", referer);

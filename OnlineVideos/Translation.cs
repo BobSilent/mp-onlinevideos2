@@ -51,6 +51,8 @@ namespace OnlineVideos
             return String.Format(GetByName(name), args);
         }
 
+        private static readonly Regex _parseStringRegex = new Regex(@"\$\{([^\}]+)\}", RegexOptions.Compiled);
+
         /// <summary>
         /// Takes an input string and replaces all ${named} variables with the proper translation if available
         /// </summary>
@@ -58,8 +60,7 @@ namespace OnlineVideos
         /// <returns>translated input string</returns>
         public string ParseString(string input)
         {
-            Regex replacements = new Regex(@"\$\{([^\}]+)\}");
-            MatchCollection matches = replacements.Matches(input);
+            MatchCollection matches = _parseStringRegex.Matches(input);
             foreach (Match match in matches)
             {
                 input = input.Replace(match.Value, GetByName(match.Groups[1].Value));

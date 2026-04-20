@@ -57,6 +57,7 @@ namespace OnlineVideos.Sites
             if (parentCategory.SubCategories == null) parentCategory.SubCategories = new List<Category>();
             foreach (var item in data["tiles"])
             {
+                if (regex_Series == null) continue;
                 Match m = regex_Series.Match(item.ToString());
                 if (m.Success)
                 {

@@ -115,10 +115,12 @@ namespace OnlineVideos.Downloading
 
         public List<DownloadInfo> GetAll()
         {
-            List<DownloadInfo> result = _currentDownloadsParallel.Select(c => c.CurrentItem).ToList();
             lock (_locker)
+            {
+                List<DownloadInfo> result = _currentDownloadsParallel.Select(c => c.CurrentItem).ToList();
                 result.AddRange(_currentDownloadsQueuedPerSite.Select(c => c.Value).SelectMany(l => l).Select(l => l.CurrentItem));
-            return result;
+                return result;
+            }
         }
 
         public DownloadList GetNext(string site)
