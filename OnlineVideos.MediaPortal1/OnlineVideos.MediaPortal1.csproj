@@ -145,6 +145,7 @@
   <ItemGroup>
     <EmbeddedResource Include="OnlineVideos.png" />
     <EmbeddedResource Include="OnlineVideosDisabled.png" />
+    <EmbeddedResource Include="Resources\*.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OnlineVideos\OnlineVideos.csproj" />
