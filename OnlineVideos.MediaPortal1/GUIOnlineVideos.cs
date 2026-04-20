@@ -745,10 +745,11 @@ namespace OnlineVideos.MediaPortal1
                         {
                             if (PluginConfiguration.Instance.useQuickSelect && char.IsLetterOrDigit(pressedChar))
                             {
-                                string lowerChar = pressedChar.ToString().ToLower();
+                                char lowerChar = char.ToLowerInvariant(pressedChar);
                                 for (int i = GUI_facadeView.SelectedListItemIndex + 1; i < GUI_facadeView.Count; i++)
                                 {
-                                    if (GUI_facadeView[i].Label.ToLower().StartsWith(lowerChar))
+                                    string label = GUI_facadeView[i].Label;
+                                    if (label.Length > 0 && char.ToLowerInvariant(label[0]) == lowerChar)
                                     {
                                         GUI_facadeView.SelectedListItemIndex = i;
                                         return;
@@ -759,10 +760,6 @@ namespace OnlineVideos.MediaPortal1
                     }
                     break;
             }
-            GUI_btnOrderBy.Label = Translation.Instance.SortOptions;
-            GUI_btnMaxResult.Label = Translation.Instance.MaxResults;
-            GUI_btnSearchCategories.Label = Translation.Instance.Category;
-            GUI_btnTimeFrame.Label = Translation.Instance.Timeframe;
             base.OnAction(action);
         }
 
@@ -1354,7 +1351,7 @@ namespace OnlineVideos.MediaPortal1
                 if (currentFilter.Matches(name) &&
                     siteutils.TryGetValue(name, out aSite) &&
                     aSite.Settings.IsEnabled &&
-                    !(GroupsEnabled & (aSite is Sites.FavoriteUtil | aSite is Sites.DownloadedVideoUtil)) && // don't show Favorites and Downloads site if groups are enabled (because they are added as groups)
+                    !(GroupsEnabled && (aSite is Sites.FavoriteUtil || aSite is Sites.DownloadedVideoUtil)) && // don't show Favorites and Downloads site if groups are enabled (because they are added as groups)
                     (!aSite.Settings.ConfirmAge || !OnlineVideoSettings.Instance.UseAgeConfirmation || OnlineVideoSettings.Instance.AgeConfirmed))
                 {
                     OnlineVideosGuiListItem loListItem = new OnlineVideosGuiListItem(aSite);
@@ -1499,7 +1496,7 @@ namespace OnlineVideos.MediaPortal1
             GUI_facadeView.Add(loListItem);
             currentFacadeItems.Add(loListItem);
 
-            Dictionary<string, bool> imageHash = new Dictionary<string, bool>();
+            HashSet<string> imageHash = new HashSet<string>();
             suggestedView = null;
             currentFilter.StartMatching();
             if (categories != null)
@@ -1526,7 +1523,7 @@ namespace OnlineVideos.MediaPortal1
                                 loListItem.PinImage = SiteImageExistenceCache.GetImageForSite(Translation.Instance.Favourites, type: "Icon");
                             }
                         }
-                        if (!string.IsNullOrEmpty(loCat.Thumb)) imageHash[loCat.Thumb] = true;
+                        if (!string.IsNullOrEmpty(loCat.Thumb)) imageHash.Add(loCat.Thumb);
                         loListItem.OnItemSelected += OnItemSelected;
                         if (loCat == selectedCategory) categoryIndexToSelect = GUI_facadeView.Count; // select the category that was previously selected
                         GUI_facadeView.Add(loListItem);
@@ -1594,7 +1591,7 @@ namespace OnlineVideos.MediaPortal1
             loListItem.OnItemSelected += OnItemSelected;
             MediaPortal.Util.Utils.SetDefaultIcons(loListItem);
             GUI_infoList.Add(loListItem);
-            Dictionary<string, bool> imageHash = new Dictionary<string, bool>();
+            HashSet<string> imageHash = new HashSet<string>();
             if (videos != null)
             {
                 foreach (var video in videos)
@@ -1605,7 +1602,7 @@ namespace OnlineVideos.MediaPortal1
                     };
                     loListItem.OnItemSelected += OnItemSelected;
                     GUI_infoList.Add(loListItem);
-                    if (!string.IsNullOrEmpty(video.Thumb)) imageHash[video.Thumb] = true;
+                    if (!string.IsNullOrEmpty(video.Thumb)) imageHash.Add(video.Thumb);
                 }
             }
             if (imageHash.Count > 0) ImageDownloader.GetImages<DetailVideoInfo>(currentTrailerList);
@@ -1655,8 +1652,6 @@ namespace OnlineVideos.MediaPortal1
         {
             string query = null;
             const int minchars = 4;
-            string[] sep = new string[] { "|", " ", ",", ";" };
-            string[] titlesep = { " - " };
             int totalitems = 0;
 
             GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
@@ -1666,7 +1661,7 @@ namespace OnlineVideos.MediaPortal1
             if (searchexpressions.Count > 0)
             {
                 // try to get expression parts from title
-                List<string> titleexpressions = CleanExpression(searchexpressions[0]).Split(titlesep, StringSplitOptions.RemoveEmptyEntries).Where(s => !string.IsNullOrEmpty(s) && s.Length >= minchars).Distinct().ToList();
+                List<string> titleexpressions = CleanExpression(searchexpressions[0]).Split(_titleSeparators, StringSplitOptions.RemoveEmptyEntries).Where(s => !string.IsNullOrEmpty(s) && s.Length >= minchars).Distinct().ToList();
 
                 foreach (GUIListItem item in titleexpressions.Select(keyword => new GUIListItem(keyword.Trim().TrimEnd('.').TrimEnd(':'))))
                 {
@@ -1678,7 +1673,7 @@ namespace OnlineVideos.MediaPortal1
             // add keywords
             foreach (string searchexpression in searchexpressions)
             {
-                List<string> keywords = CleanExpression(searchexpression).Split(sep, StringSplitOptions.RemoveEmptyEntries).Where(s => !string.IsNullOrEmpty(s) && s.Length >= minchars).OrderByDescending(x => x.Length).Distinct().ToList();
+                List<string> keywords = CleanExpression(searchexpression).Split(_keywordSeparators, StringSplitOptions.RemoveEmptyEntries).Where(s => !string.IsNullOrEmpty(s) && s.Length >= minchars).OrderByDescending(x => x.Length).Distinct().ToList();
 
                 foreach (GUIListItem item in keywords.Select(keyword => new GUIListItem(keyword.Trim().TrimEnd('.').TrimEnd(':'))))
                 {
@@ -1698,6 +1693,8 @@ namespace OnlineVideos.MediaPortal1
         }
 
         static readonly Regex _cleanExpressionRegex = new Regex("[,;!?'\"()]", RegexOptions.Compiled);
+        static readonly string[] _keywordSeparators = { "|", " ", ",", ";" };
+        static readonly string[] _titleSeparators = { " - " };
 
         private string CleanExpression(string expression)
         {
@@ -1971,15 +1968,14 @@ namespace OnlineVideos.MediaPortal1
             currentFacadeItems.Add(backItem);
 
             // add the items
-            Dictionary<string, bool> imageHash = new Dictionary<string, bool>();
+            HashSet<string> imageHash = new HashSet<string>();
             currentFilter.StartMatching();
-            string videosVKfilterLower = videosVKfilter.ToLower();
 
             foreach (VideoInfo videoInfo in currentVideoList)
             {
                 videoInfo.CleanDescriptionAndTitle();
                 if (!currentFilter.Matches(videoInfo.Title) || FilterOut(videoInfo.Title) || FilterOut(videoInfo.Description)) continue;
-                if (!string.IsNullOrEmpty(videosVKfilter) && !videoInfo.Title.ToLower().Contains(videosVKfilterLower)) continue;
+                if (!string.IsNullOrEmpty(videosVKfilter) && videoInfo.Title.IndexOf(videosVKfilter, StringComparison.OrdinalIgnoreCase) < 0) continue;
 
                 OnlineVideosGuiListItem listItem = new OnlineVideosGuiListItem(videoInfo)
                 {
@@ -1991,7 +1987,7 @@ namespace OnlineVideos.MediaPortal1
                 currentFacadeItems.Add(listItem);
 
                 if (listItem.Item == selectedVideo) GUI_facadeView.SelectedListItemIndex = GUI_facadeView.Count - 1;
-                if (!string.IsNullOrEmpty(videoInfo.Thumb)) imageHash[videoInfo.Thumb] = true;
+                if (!string.IsNullOrEmpty(videoInfo.Thumb)) imageHash.Add(videoInfo.Thumb);
             }
             // fall back to list view if there are no items with thumbs or more than one item and all have the same thumb
             suggestedView = null;
@@ -2138,6 +2134,11 @@ namespace OnlineVideos.MediaPortal1
             keyBoard.IsNumeric = true;
         }
 
+        // Cached once on first keyboard use — avoids GetProperty() reflection on every call.
+        // null = not yet checked; stored PropertyInfo or a sentinel means checked.
+        private static System.Reflection.PropertyInfo _vkIsNumericProperty;
+        private static bool _vkIsNumericChecked;
+
         internal static bool GetUserInputString(ref string sString, bool password, bool isNumeric)
         {
             VirtualKeyboard keyBoard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
@@ -2146,8 +2147,16 @@ namespace OnlineVideos.MediaPortal1
             keyBoard.SetLabelAsInitialText(false); // set to false, otherwise our intial text is cleared
             keyBoard.Text = sString;
             keyBoard.Password = password;
-            if (isNumeric && keyBoard.GetType().GetProperty("IsNumeric") != null) // for backwards compatibility with MP 1.29 and earlier
-                TrySetIsNumeric(keyBoard);
+            if (isNumeric)
+            {
+                if (!_vkIsNumericChecked)
+                {
+                    _vkIsNumericProperty = keyBoard.GetType().GetProperty("IsNumeric");
+                    _vkIsNumericChecked = true;
+                }
+                if (_vkIsNumericProperty != null) // for backwards compatibility with MP 1.29 and earlier
+                    TrySetIsNumeric(keyBoard);
+            }
             keyBoard.DoModal(GUIWindowManager.ActiveWindow); // show it...
             if (keyBoard.IsConfirmed) sString = keyBoard.Text;
             return keyBoard.IsConfirmed;
@@ -2571,7 +2580,6 @@ namespace OnlineVideos.MediaPortal1
         {
             var result = new PlayList() { IsPlayAll = true, Random = random };
             bool startVideoFound = startWith == null;
-            string videosVKfilterLower = videosVKfilter.ToLower();
             foreach (VideoInfo video in videos)
             {
                 // when not in details view of a site with details view only include videos that don't have details
@@ -2579,7 +2587,7 @@ namespace OnlineVideos.MediaPortal1
 
                 // filter out by the current filter
                 if (!currentFilter.Matches(video.Title) || FilterOut(video.Title) || FilterOut(video.Description)) continue;
-                if (!string.IsNullOrEmpty(videosVKfilter) && !video.Title.ToLower().Contains(videosVKfilterLower)) continue;
+                if (!string.IsNullOrEmpty(videosVKfilter) && video.Title.IndexOf(videosVKfilter, StringComparison.OrdinalIgnoreCase) < 0) continue;
 
                 if (!startVideoFound && video != startWith) continue;
                 else startVideoFound = true;
@@ -3049,6 +3057,12 @@ namespace OnlineVideos.MediaPortal1
 
         private void UpdateViewState()
         {
+            // Reset filter/search button labels to their default captions on every state change.
+            GUI_btnOrderBy.Label = Translation.Instance.SortOptions;
+            GUI_btnMaxResult.Label = Translation.Instance.MaxResults;
+            GUI_btnSearchCategories.Label = Translation.Instance.Category;
+            GUI_btnTimeFrame.Label = Translation.Instance.Timeframe;
+
             switch (CurrentState)
             {
                 case State.groups:
@@ -3114,7 +3128,7 @@ namespace OnlineVideos.MediaPortal1
                     break;
                 case State.details:
                     GUIPropertyManager.SetProperty("#OnlineVideos.HeaderLabel", selectedVideo.Title);
-                    GUIPropertyManager.SetProperty("#OnlineVideos.HeaderImagee", SiteImageExistenceCache.GetImageForSite(SelectedSite.Settings.Name, SelectedSite.Settings.UtilName));
+                    GUIPropertyManager.SetProperty("#OnlineVideos.HeaderImage", SiteImageExistenceCache.GetImageForSite(SelectedSite.Settings.Name, SelectedSite.Settings.UtilName));
                     HideAndDisable(GUI_facadeView.GetID);
                     HideFilterButtons();
                     HideSearchButtons();
@@ -3443,11 +3457,18 @@ namespace OnlineVideos.MediaPortal1
                     return;
                 }
 
-                string[] keys = extendedProperties.Where(s => s.StartsWith(prefix)).ToArray();
-                for (int i = 0; i < keys.Length; i++)
+                // Collect matching keys first (can't remove while iterating the set),
+                // then clear — avoids the LINQ .Where().ToArray() intermediate allocation inside the lock.
+                var toRemove = new List<string>(extendedProperties.Count);
+                foreach (string key in extendedProperties)
                 {
-                    GUIPropertyManager.SetProperty(keys[i], string.Empty);
-                    extendedProperties.Remove(keys[i]);
+                    if (key.StartsWith(prefix, StringComparison.Ordinal))
+                        toRemove.Add(key);
+                }
+                foreach (string key in toRemove)
+                {
+                    GUIPropertyManager.SetProperty(key, string.Empty);
+                    extendedProperties.Remove(key);
                 }
             }
         }
