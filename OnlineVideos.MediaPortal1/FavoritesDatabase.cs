@@ -48,13 +48,15 @@ namespace OnlineVideos.MediaPortal1
 
         public List<KeyValuePair<string, uint>> GetSiteIds()
         {
-            string lsSQL = @"select distinct VDO_SITE_ID, max(NumVideos) as NumVideos from
-                            (
-                            select VDO_SITE_ID, count(*) as NumVideos from Favorite_Videos group by VDO_SITE_ID
-                            UNION
-                            select CAT_SITE_ID, 0 from Favorite_Categories
-                            )
-                            group by VDO_SITE_ID";
+            string lsSQL = """
+                select distinct VDO_SITE_ID, max(NumVideos) as NumVideos from
+                    (
+                        select VDO_SITE_ID, count(*) as NumVideos from Favorite_Videos group by VDO_SITE_ID
+                        UNION
+                        select CAT_SITE_ID, 0 from Favorite_Categories
+                    )
+                    group by VDO_SITE_ID
+                """;
             SQLiteResultSet loResultSet = m_db.Execute(lsSQL);
             List<KeyValuePair<string, uint>> siteIdList = new List<KeyValuePair<string, uint>>();
             for (int iRow = 0; iRow < loResultSet.Rows.Count; iRow++)
@@ -67,18 +69,19 @@ namespace OnlineVideos.MediaPortal1
         public bool AddFavoriteVideo(VideoInfo foVideo, string titleFromUtil, string siteName)
         {
             DatabaseUtility.RemoveInvalidChars(ref siteName);
-            string title = string.IsNullOrEmpty(titleFromUtil) ? "" : DatabaseUtility.RemoveInvalidChars(titleFromUtil);
-            string desc = string.IsNullOrEmpty(foVideo.Description) ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.Description);
-            string thumb = string.IsNullOrEmpty(foVideo.Thumb) ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.Thumb);
-            string url = string.IsNullOrEmpty(foVideo.VideoUrl) ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.VideoUrl);
-            string length = string.IsNullOrEmpty(foVideo.Length) ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.Length);
-            string airdate = string.IsNullOrEmpty(foVideo.Airdate) ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.Airdate);
-            string other = DatabaseUtility.RemoveInvalidChars(foVideo.GetOtherAsString());
+            string title   = string.IsNullOrEmpty(titleFromUtil)       ? "" : DatabaseUtility.RemoveInvalidChars(titleFromUtil);
+            string desc    = string.IsNullOrEmpty(foVideo.Description) ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.Description);
+            string thumb   = string.IsNullOrEmpty(foVideo.Thumb)       ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.Thumb);
+            string url     = string.IsNullOrEmpty(foVideo.VideoUrl)    ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.VideoUrl);
+            string length  = string.IsNullOrEmpty(foVideo.Length)      ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.Length);
+            string airdate = string.IsNullOrEmpty(foVideo.Airdate)     ? "" : DatabaseUtility.RemoveInvalidChars(foVideo.Airdate);
+            string other   = DatabaseUtility.RemoveInvalidChars(foVideo.GetOtherAsString());
 
             Log.Instance.Info("inserting favorite on site '{4}' with title: '{0}', desc: '{1}', thumb: '{2}', url: '{3}'", title, desc, thumb, url, siteName);
 
             //check if the video is already in the favorite list
-            string lsSQL = string.Format("select VDO_ID from FAVORITE_VIDEOS where VDO_SITE_ID='{0}' AND VDO_URL='{1}' and VDO_OTHER_NFO='{2}'", siteName, url, other);
+            string lsSQL = string.Format("select VDO_ID from FAVORITE_VIDEOS where VDO_SITE_ID='{0}' AND VDO_URL='{1}' and VDO_OTHER_NFO='{2}'",
+                EscapeString(siteName), EscapeString(url), EscapeString(other));
             if (m_db.Execute(lsSQL).Rows.Count > 0)
             {
                 Log.Instance.Info("Favorite Video '{0}' already in database", title);
@@ -88,7 +91,9 @@ namespace OnlineVideos.MediaPortal1
             lsSQL =
                 string.Format(
                     "insert into FAVORITE_VIDEOS(VDO_NM,VDO_URL,VDO_DESC,VDO_TAGS,VDO_LENGTH,VDO_OTHER_NFO,VDO_IMG_URL,VDO_SITE_ID)VALUES('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')",
-                    title, url, desc, airdate, length, other, thumb, siteName);
+                    EscapeString(title), EscapeString(url), EscapeString(desc),
+                    EscapeString(airdate), EscapeString(length), EscapeString(other),
+                    EscapeString(thumb), EscapeString(siteName));
             m_db.Execute(lsSQL);
             if (m_db.ChangedRows() > 0)
             {
@@ -104,7 +109,7 @@ namespace OnlineVideos.MediaPortal1
 
         public bool RemoveFavoriteVideo(FavoriteDbVideoInfo foVideo)
         {
-            String lsSQL = string.Format("delete from FAVORITE_VIDEOS where VDO_ID='{0}' ", foVideo.Id);
+            String lsSQL = string.Format("delete from FAVORITE_VIDEOS where VDO_ID={0}", foVideo.Id);
             m_db.Execute(lsSQL);
             return m_db.ChangedRows() > 0;
         }
@@ -113,7 +118,11 @@ namespace OnlineVideos.MediaPortal1
         {
             DatabaseUtility.RemoveInvalidChars(ref siteName);
             string sql = "delete from FAVORITE_VIDEOS";
-            if (!string.IsNullOrEmpty(siteName)) sql += string.Format(" where VDO_SITE_ID='{0}'", siteName);
+            if (!string.IsNullOrEmpty(siteName))
+            {
+                sql += string.Format(" where VDO_SITE_ID='{0}'", EscapeString(siteName));
+            }
+
             m_db.Execute(sql);
             return m_db.ChangedRows() > 0;
         }
@@ -124,19 +133,28 @@ namespace OnlineVideos.MediaPortal1
             if (!string.IsNullOrEmpty(siteName))
             {
                 DatabaseUtility.RemoveInvalidChars(ref siteName);
-                lsSQL += string.Format(" where VDO_SITE_ID='{0}'", siteName);
+                lsSQL += string.Format(" where VDO_SITE_ID='{0}'", EscapeString(siteName));
             }
             if (!string.IsNullOrEmpty(fsQuery))
             {
+                // Escape both SQL single-quotes and LIKE wildcard characters
+                string escapedQuery = EscapeString(EscapeLike(fsQuery));
                 if (string.IsNullOrEmpty(siteName))
-                    lsSQL += string.Format(" where VDO_NM like '%{0}%' or VDO_DESC like '%{0}%'", fsQuery);
+                {
+                    lsSQL += string.Format(" where VDO_NM like '%{0}%' escape '\\' or VDO_DESC like '%{0}%' escape '\\'", escapedQuery);
+                }
                 else
-                    lsSQL += string.Format(" and (VDO_NM like '%{0}%' or VDO_DESC like '%{0}%')", fsQuery);
+                {
+                    lsSQL += string.Format(" and (VDO_NM like '%{0}%' escape '\\' or VDO_DESC like '%{0}%' escape '\\')", escapedQuery);
+                }
             }
 
             SQLiteResultSet loResultSet = m_db.Execute(lsSQL);
             List<VideoInfo> loFavoriteList = new List<VideoInfo>();
-            if (loResultSet.Rows.Count == 0) return loFavoriteList;
+            if (loResultSet.Rows.Count == 0)
+            {
+                return loFavoriteList;
+            }
 
             for (int iRow = 0; iRow < loResultSet.Rows.Count; iRow++)
             {
@@ -170,7 +188,8 @@ namespace OnlineVideos.MediaPortal1
             string categoryHierarchyName = EscapeString(cat.RecursiveName("|"));
 
             //check if the category is already in the favorite list
-            if (m_db.Execute(string.Format("select CAT_ID from FAVORITE_Categories where CAT_Hierarchy='{0}' AND CAT_SITE_ID='{1}'", categoryHierarchyName, siteName)).Rows.Count > 0)
+            if (m_db.Execute(string.Format("select CAT_ID from FAVORITE_Categories where CAT_Hierarchy='{0}' AND CAT_SITE_ID='{1}'",
+                categoryHierarchyName, EscapeString(siteName))).Rows.Count > 0)
             {
                 Log.Instance.Info("Favorite Category {0} already in database", cat.Name);
                 return true;
@@ -183,11 +202,11 @@ namespace OnlineVideos.MediaPortal1
                 string.Format(
                     "insert into FAVORITE_Categories(CAT_Name,CAT_Desc,CAT_ThumbUrl,CAT_Hierarchy,CAT_SITE_ID,CAT_IS_SEARCH,SEARCH_CAT_HASSUBS) " +
                     "VALUES('{0}','{1}','{2}','{3}','{4}',{5},{6})",
-                    DatabaseUtility.RemoveInvalidChars(cat.Name),
-                    cat.Description == null ? "" : DatabaseUtility.RemoveInvalidChars(cat.Description),
-                    cat.Thumb,
+                    EscapeString(DatabaseUtility.RemoveInvalidChars(cat.Name)),
+                    cat.Description == null ? "" : EscapeString(DatabaseUtility.RemoveInvalidChars(cat.Description)),
+                    EscapeString(cat.Thumb ?? ""),
                     categoryHierarchyName,
-                    siteName,
+                    EscapeString(siteName),
                     cat.ParentCategory is SearchCategory,
                     cat.HasSubCategories
                     );
@@ -208,7 +227,7 @@ namespace OnlineVideos.MediaPortal1
         {
             DatabaseUtility.RemoveInvalidChars(ref siteName);
             var results = new List<FavoriteDbCategory>();
-            SQLiteResultSet resultSet = m_db.Execute(string.Format("select * from Favorite_Categories where CAT_SITE_ID = '{0}'", siteName));
+            SQLiteResultSet resultSet = m_db.Execute(string.Format("select * from Favorite_Categories where CAT_SITE_ID = '{0}'", EscapeString(siteName)));
             for (int iRow = 0; iRow < resultSet.Rows.Count; iRow++)
             {
                 results.Add(
@@ -230,7 +249,7 @@ namespace OnlineVideos.MediaPortal1
         {
             DatabaseUtility.RemoveInvalidChars(ref siteName);
             List<string> results = new List<string>();
-            SQLiteResultSet resultSet = m_db.Execute(string.Format("select CAT_Hierarchy from Favorite_Categories where CAT_SITE_ID = '{0}'", siteName));
+            SQLiteResultSet resultSet = m_db.Execute(string.Format("select CAT_Hierarchy from Favorite_Categories where CAT_SITE_ID = '{0}'", EscapeString(siteName)));
             for (int iRow = 0; iRow < resultSet.Rows.Count; iRow++)
             {
                 results.Add(DatabaseUtility.Get(resultSet, iRow, "CAT_Hierarchy"));
@@ -240,7 +259,7 @@ namespace OnlineVideos.MediaPortal1
 
         public bool RemoveFavoriteCategory(FavoriteDbCategory cat)
         {
-            String query = string.Format("delete from Favorite_Categories where CAT_ID = '{0}'", cat.Id);
+            String query = string.Format("delete from Favorite_Categories where CAT_ID = {0}", cat.Id);
             m_db.Execute(query);
             return m_db.ChangedRows() > 0;
         }
@@ -248,7 +267,8 @@ namespace OnlineVideos.MediaPortal1
         public bool RemoveFavoriteCategory(string siteName, string recursiveCategoryName)
         {
             DatabaseUtility.RemoveInvalidChars(ref siteName);
-            String lsSQL = string.Format("delete from Favorite_Categories where CAT_Hierarchy='{0}' AND CAT_SITE_ID='{1}'", recursiveCategoryName, siteName);
+            String lsSQL = string.Format("delete from Favorite_Categories where CAT_Hierarchy='{0}' AND CAT_SITE_ID='{1}'",
+                EscapeString(recursiveCategoryName), EscapeString(siteName));
             m_db.Execute(lsSQL);
             return m_db.ChangedRows() > 0;
         }
@@ -256,6 +276,20 @@ namespace OnlineVideos.MediaPortal1
         private string EscapeString(string input)
         {
             return input.Replace("'", "''");
+        }
+
+        /// <summary>
+        /// Escapes a string for use inside a SQL LIKE pattern by neutralising the
+        /// SQLite wildcard characters <c>%</c>, <c>_</c>, and <c>[</c>.
+        /// The caller is still responsible for wrapping the result with the surrounding
+        /// <c>%…%</c> wildcards for contains-style searches.
+        /// </summary>
+        private string EscapeLike(string input)
+        {
+            // Escape the escape-character itself first, then the wildcards.
+            return input.Replace("\\", "\\\\")
+                        .Replace("%",  "\\%")
+                        .Replace("_",  "\\_");
         }
 
         #region MarshalByRefObject overrides
@@ -270,10 +304,15 @@ namespace OnlineVideos.MediaPortal1
         {
             try
             {
-                if (string.IsNullOrEmpty(siteName)) return false;
+                if (string.IsNullOrEmpty(siteName))
+                {
+                    return false;
+                }
+
                 DatabaseUtility.RemoveInvalidChars(ref siteName);
                 string categoryHierarchyName = cat != null ? EscapeString(DatabaseUtility.RemoveInvalidChars(cat.RecursiveName("|"))) : "";
-                m_db.Execute(string.Format("insert into PREFERRED_LAYOUT(Site_Name, Category_Hierarchy, Layout) VALUES ('{0}','{1}',{2})", siteName, categoryHierarchyName, Layout));
+                m_db.Execute(string.Format("insert into PREFERRED_LAYOUT(Site_Name, Category_Hierarchy, Layout) VALUES ('{0}','{1}',{2})",
+                    EscapeString(siteName), categoryHierarchyName, Layout));
                 return m_db.ChangedRows() > 0;
             }
             catch (Exception ex)
@@ -287,12 +326,17 @@ namespace OnlineVideos.MediaPortal1
         {
             try
             {
-                if (string.IsNullOrEmpty(siteName)) return null;
+                if (string.IsNullOrEmpty(siteName))
+                {
+                    return null;
+                }
+
                 DatabaseUtility.RemoveInvalidChars(ref siteName);
                 string categoryHierarchyName = cat != null ? EscapeString(DatabaseUtility.RemoveInvalidChars(cat.RecursiveName("|"))) : "";
                 if (!string.IsNullOrEmpty(categoryHierarchyName))
                 {
-                    var resultSet = m_db.Execute(string.Format("SELECT Layout FROM PREFERRED_LAYOUT WHERE Site_Name = '{0}' AND Category_Hierarchy = '{1}'", siteName, categoryHierarchyName));
+                    var resultSet = m_db.Execute(string.Format("SELECT Layout FROM PREFERRED_LAYOUT WHERE Site_Name = '{0}' AND Category_Hierarchy = '{1}'",
+                        EscapeString(siteName), categoryHierarchyName));
                     if (resultSet.Rows.Count > 0)
                     {
                         return (MediaPortal.GUI.Library.GUIFacadeControl.Layout)int.Parse(DatabaseUtility.Get(resultSet, 0, "Layout"));

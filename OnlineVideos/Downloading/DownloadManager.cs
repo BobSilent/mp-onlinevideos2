@@ -89,7 +89,8 @@ namespace OnlineVideos.Downloading
             {
                 lock (_locker)
                 {
-                    return _currentDownloadsQueuedPerSite.Count + _currentDownloadsParallel.Count;
+                    // Sum individual DownloadList entries across all site buckets, not just bucket count.
+                    return _currentDownloadsQueuedPerSite.Values.Sum(l => l.Count) + _currentDownloadsParallel.Count;
                 }
             }
         }

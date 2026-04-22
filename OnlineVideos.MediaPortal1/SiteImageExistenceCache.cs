@@ -11,12 +11,18 @@ namespace OnlineVideos.MediaPortal1
 	{
 		static readonly Dictionary<string, string> cachedImageForSite = new Dictionary<string, string>();
 
+		// Separator that cannot appear in a site name (site names are valid file-system names).
+		private const char KeySeparator = '|';
+
+		private static string MakeKey(string siteName, string type) => siteName + KeySeparator + type;
+
 		internal static string GetImageForSite(string siteName, string utilName = "", string type = "Banner", bool logIfNotfound = true)
 		{
 			lock (cachedImageForSite)
 			{
+				string key = MakeKey(siteName, type);
 				string image = null;
-				if (!cachedImageForSite.TryGetValue(string.Format("{0}{1}", siteName, type), out image))
+				if (!cachedImageForSite.TryGetValue(key, out image))
 				{
 					// use png with the same name as the Site - first check subfolder of current skin (allows skinners to use custom icons)
 					image = string.Format(@"{0}\Media\OnlineVideos\{1}s\{2}.png", GUIGraphicsContext.Skin, type, siteName);
@@ -36,7 +42,7 @@ namespace OnlineVideos.MediaPortal1
 						}
 					}
 					if (logIfNotfound && string.IsNullOrEmpty(image)) Log.Instance.Debug("{0} for site '{1}' not found!", type, siteName);
-					cachedImageForSite[string.Format("{0}{1}", siteName, type)] = image;
+					cachedImageForSite[key] = image;
 				}
 				return image;
 			}
@@ -52,8 +58,8 @@ namespace OnlineVideos.MediaPortal1
 			{
 				lock (cachedImageForSite)
 				{
-					cachedImageForSite.Remove(string.Format("{0}{1}", siteName, "Icon"));
-					cachedImageForSite.Remove(string.Format("{0}{1}", siteName, "Banner"));
+					cachedImageForSite.Remove(MakeKey(siteName, "Icon"));
+					cachedImageForSite.Remove(MakeKey(siteName, "Banner"));
 				}
 			}
 		}

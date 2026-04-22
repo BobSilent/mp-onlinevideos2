@@ -27,7 +27,7 @@ namespace OnlineVideos.MediaPortal1
         private Thread _backgroundThread = null;
         private CancellationTokenSource _cts = null;
         private bool _abortedByUser = false;
-        private readonly System.Timers.Timer _timeoutTimer = new System.Timers.Timer(OnlineVideoSettings.Instance.UtilTimeout * 1000)
+        private readonly System.Timers.Timer _timeoutTimer = new System.Timers.Timer()
         { 
             AutoReset = false 
         };
@@ -114,6 +114,7 @@ namespace OnlineVideos.MediaPortal1
                     // disable timeout when debugging
                     if (timeout && !System.Diagnostics.Debugger.IsAttached)
                     {
+                        _timeoutTimer.Interval = OnlineVideoSettings.Instance.UtilTimeout * 1000;
                         _timeoutTimer.Start();
                     }
 
@@ -204,8 +205,6 @@ namespace OnlineVideos.MediaPortal1
             _abortedByUser = false;
             IsBusy = false;
             _timeoutTimer.Stop();
-            Monitor.Exit(this);
-
             // execute the result handler
             if (stored_Handler != null)
             {
@@ -224,7 +223,14 @@ namespace OnlineVideos.MediaPortal1
                         dlg_error.DoModal(GUIWindowManager.ActiveWindow);
                     }
                 }
-
+                finally
+                {
+                    Monitor.Exit(this);
+                }
+            }
+            else
+            {
+                Monitor.Exit(this);
             }
         }
     }

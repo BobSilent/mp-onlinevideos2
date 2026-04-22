@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace OnlineVideos.Helpers
 {
@@ -42,15 +43,18 @@ namespace OnlineVideos.Helpers
                 match => ((char)Int32.Parse(match.Value.Substring(2), NumberStyles.HexNumber)).ToString());
         }
 
-        // Shared Random avoids duplicate sequences when called in the same tick.
-        private static readonly Random _random = new Random();
+        // ThreadLocal ensures each thread gets its own Random instance, avoiding
+        // the data races and duplicate sequences that a shared static Random causes.
+        private static readonly ThreadLocal<Random> _random =
+            new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
 
         public static string GetRandomLetters(int amount)
         {
             var sb = new StringBuilder(amount);
+            var rng = _random.Value;
             for (int i = 0; i < amount; i++)
             {
-                sb.Append((char)_random.Next('A', 'Z' + 1));
+                sb.Append((char)rng.Next('A', 'Z' + 1));
             }
             return sb.ToString();
         }
@@ -59,11 +63,11 @@ namespace OnlineVideos.Helpers
         {
             if (tokens.Length > 0)
             {
-
                 var regexBuilder = new StringBuilder(@"([");
                 foreach (string s in tokens)
                 {
-                    regexBuilder.Append(s);
+                    // Escape metacharacters that have special meaning inside a character class.
+                    regexBuilder.Append(Regex.Escape(s));
                 }
                 regexBuilder.Append("])");
                 Regex RE = new Regex(regexBuilder.ToString());

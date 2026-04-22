@@ -76,19 +76,28 @@ namespace OnlineVideos.Sites.Ard
                 var page = context.Page;
                 var result = page.GetStreams(video.VideoUrl, context.Token);
 
-
                 var orderedPlaybackOptions = result.Value.OrderBy(i => (int)i.Quality)
                     .ToLookup(s => s.Quality)
                     .ToDictionary(i => i.Key, i => i.Select(x => x.Url));
                 video.PlaybackOptions = orderedPlaybackOptions?.ToDictionary(e => e.Key.ToString(), e => e.Value.First());
 
+                if (video.PlaybackOptions == null || video.PlaybackOptions.Count == 0)
+                {
+                    Log.Warn($"{nameof(GetVideoUrl)}: no playback options returned for '{video.VideoUrl}'");
+                    return string.Empty;
+                }
 
-                var streamUrl = video.PlaybackOptions.FirstOrDefault().Value;
-
-                return streamUrl;
+                return video.PlaybackOptions.First().Value;
             }
 
-            return video.PlaybackOptions.FirstOrDefault().Value;
+            // Fallback path — PlaybackOptions may have been set by a prior call.
+            if (video.PlaybackOptions == null || video.PlaybackOptions.Count == 0)
+            {
+                Log.Warn($"{nameof(GetVideoUrl)}: no playback options available for '{video.VideoUrl}'");
+                return string.Empty;
+            }
+
+            return video.PlaybackOptions.First().Value;
         }
 
 
